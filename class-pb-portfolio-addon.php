@@ -151,7 +151,7 @@ class PB_Portfolio_Add_on{
 
 	protected function hover_color( &$attr, $set ) {
 
-		if ( !empty( $this->row_animation ) ) {
+		if ( !empty( $this->hover_color ) ) {
 			$attr['style'] .= ' background:' . $this->hover_color . ';';
 		}
 	}
@@ -194,6 +194,7 @@ class PB_Portfolio_Add_on{
 		if ( !empty( $set['portfolio-animation'] ) ) {
 			$this->row_animation = $set['portfolio-animation'];
 		}
+		$this->hover_color = false;
 		if ( !empty( $set['portfolio-hover-color'] ) ) {
 			$this->hover_color = $set['portfolio-hover-color'];
 			if ( ! empty( $set['portfolio-hover-color-opacity'] ) ) {
