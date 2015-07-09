@@ -93,33 +93,54 @@ class PB_Portfolio_Add_on{
 
 		//Content block attributes apply
 		add_filter( 'pootlepb_content_block_attributes', array( $this, 'content_block' ), 10, 2 );
+		//Row attributes
+		add_filter( 'pootlepb_row_style_attributes', array( $this, 'row_attr' ), 10, 2 );
 		//Content block panel tab
-		add_filter( 'pootlepb_content_block_tabs', array( $this, 'add_block_tab' ) );
+		add_filter( 'pootlepb_content_block_tabs', array( $this, 'add_tab' ) );
 		add_filter( 'pootlepb_content_block_fields', array( $this, 'content_block_fields' ) );
 		//Row style panel tab
-		add_filter( 'pootlepb_row_settings_tabs', array( $this, 'add_row_tab' ) );
+		add_filter( 'pootlepb_row_settings_tabs', array( $this, 'add_tab' ) );
 		add_filter( 'pootlepb_row_settings_fields', array( $this, 'row_tab_fields' ) );
 
 	} // End add_filters()
 
 	/**
 	 * Sets content block attributes
+	 *
 	 * @param array $attr Content block attributes
 	 * @param array $set Content block settings
+	 * @return array
 	 */
 	public function content_block( $attr, $set ) {
 		if ( !empty( $set['portfolio-bg'] ) ) {
 			$attr['style'] .= 'background: url(' . $set['portfolio-bg'] . ') center/cover;';
 		}
+		if ( !empty( $set['make-portfolio-item'] ) ) {
+			$attr['class'][] = 'portfolio-item';
+		}
 		return $attr;
 	}
 
 	/**
-	 * Adds portfolio tab to content block panel
+	 * Sets row attributes
+	 *
+	 * @param array $attr Content block attributes
+	 * @param array $set Content block settings
+	 * @return array
+	 */
+	public function row_attr( $attr, $set ) {
+		if ( !empty( $set['portfolio-layout'] ) ) {
+			$attr['class'][] = 'portfolio-layout-' . $set['portfolio-layout'];
+		}
+		return $attr;
+	}
+
+	/**
+	 * Adds portfolio tab to row settings and content block panel
 	 * @param array $tabs The array of tabs
 	 * @return array Tabs
 	 */
-	public function add_block_tab( $tabs ) {
+	public function add_tab( $tabs ) {
 		$tabs['portfolio'] = array(
 			'label' => 'Portfolio',
 			'priority' => 7,
@@ -146,19 +167,6 @@ class PB_Portfolio_Add_on{
 			'tab' => 'Portfolio',
 		);
 		return $f;
-	}
-
-	/**
-	 * Adds portfolio tab to row settings panel
-	 * @param array $tabs The array of tabs
-	 * @return array Tabs
-	 */
-	public function add_row_tab( $tabs ) {
-		$tabs['portfolio'] = array(
-			'label' => 'Portfolio',
-			'priority' => 7,
-		);
-		return $tabs;
 	}
 
 	/**

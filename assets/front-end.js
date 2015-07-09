@@ -7,5 +7,14 @@
 jQuery(function ($) {
 
     //Put all jquery code in here
+    $( '.panel-row-style.portfolio-layout-square').each( function(){
+        var $t = $(this);
 
+        $t.find( '.panel.portfolio-item').each( function(){
+            var $t = $(this);
+            $t.css('height', $t.width());
+        } );
+
+        $t.css('opacity', '1');
+    } );
 });

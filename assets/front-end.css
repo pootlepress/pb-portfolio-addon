@@ -4,3 +4,8 @@
  * @package PB_Portfolio_Add_on
  * @version 0.1.0
  */
+
+.panel-row-style.portfolio-layout-square{
+    opacity:0;
+    text-align: center;
+}
