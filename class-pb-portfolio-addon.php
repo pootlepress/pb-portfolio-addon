@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @property string hover_color
+ * @property string row_animation
+ */
 class PB_Portfolio_Add_on{
 
 	/**
@@ -146,14 +150,10 @@ class PB_Portfolio_Add_on{
 	}
 
 	protected function hover_color( &$attr, $set ) {
-		if ( !empty( $set['portfolio-hover-color'] ) ) {
-			$color = $set['portfolio-hover-color'];
-			if ( ! empty( $set['portfolio-hover-color-opacity'] ) ) {
-				$color = 'rgba( ' . pootlepb_hex2rgb( $color ) . ', ' . ( 1 - $set['portfolio-hover-color-opacity'] ) . ' )';
-			}
-			$attr['style'] .= ' background:' . $color . ';';
-		}
 
+		if ( !empty( $this->row_animation ) ) {
+			$attr['style'] .= ' background:' . $this->hover_color . ';';
+		}
 	}
 
 	protected function hover_animation( &$attr, $set ) {
@@ -194,6 +194,12 @@ class PB_Portfolio_Add_on{
 		if ( !empty( $set['portfolio-animation'] ) ) {
 			$this->row_animation = $set['portfolio-animation'];
 		}
+		if ( !empty( $set['portfolio-hover-color'] ) ) {
+			$this->hover_color = $set['portfolio-hover-color'];
+			if ( ! empty( $set['portfolio-hover-color-opacity'] ) ) {
+				$this->hover_color = 'rgba( ' . pootlepb_hex2rgb( $this->hover_color ) . ', ' . ( 1 - $set['portfolio-hover-color-opacity'] ) . ' )';
+			}
+		}
 
 		return $attr;
 	}
@@ -229,18 +235,6 @@ class PB_Portfolio_Add_on{
 			'priority' => 2,
 			'tab' => 'portfolio',
 		);
-		$f['portfolio-hover-color'] = array(
-			'name' => 'Hover color',
-			'type' => 'color',
-			'priority' => 3,
-			'tab' => 'portfolio',
-		);
-		$f['portfolio-hover-color-opacity'] = array(
-			'name' => 'Hover color Transparency',
-			'type' => 'slider',
-			'priority' => 4,
-			'tab' => 'portfolio',
-		);
 		return $f;
 	}
 
@@ -274,6 +268,19 @@ class PB_Portfolio_Add_on{
 			),
 			'default' => '',
 		);
+		$f['portfolio-hover-color'] = array(
+			'name' => 'Hover color',
+			'type' => 'color',
+			'priority' => 3,
+			'tab' => 'portfolio',
+		);
+		$f['portfolio-hover-color-opacity'] = array(
+			'name' => 'Hover color Transparency',
+			'type' => 'slider',
+			'priority' => 4,
+			'tab' => 'portfolio',
+		);
+
 		return $f;
 	}
 
