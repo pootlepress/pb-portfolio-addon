@@ -87,6 +87,10 @@ class PB_Portfolio_Add_on{
 	private function add_actions() {
 		//Adding front end JS and CSS in /assets folder
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_action( 'pootlepb_enqueue_admin_scripts', array( $this, 'admin_enqueue' ) );
+		//Content Portfolio container
+		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container' ), 25 );
+		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container_close' ), 70 );
 	} // End add_actions()
 
 	private function add_filters() {
@@ -115,10 +119,63 @@ class PB_Portfolio_Add_on{
 		if ( !empty( $set['portfolio-bg'] ) ) {
 			$attr['style'] .= 'background: url(' . $set['portfolio-bg'] . ') center/cover;';
 		}
-		if ( !empty( $set['make-portfolio-item'] ) ) {
-			$attr['class'][] = 'portfolio-item';
-		}
 		return $attr;
+	}
+
+	/**
+	 * Render the Content Panel.
+	 *
+	 * @param string $widget_info The widget class name.
+	 *
+	 * @since 0.1.0
+	 */
+	public function portfolio_container( $info ) {
+		$set = json_decode( $info['info']['style'], true );
+
+		if ( !empty( $set['portfolio-item'] ) ) {
+
+			$attr = array();
+			$attr['class'] = 'pb-addon-portfolio-item';
+			$attr['style'] = '';
+
+			$this->hover_color( $attr, $set );
+			$this->hover_animation( $attr, $set );
+
+			echo '<div ' . pootlepb_stringify_attributes( $attr ) . '>';
+		}
+	}
+
+	protected function hover_color( &$attr, $set ) {
+		if ( !empty( $set['portfolio-hover-color'] ) ) {
+			$color = $set['portfolio-hover-color'];
+			if ( ! empty( $set['portfolio-hover-color-opacity'] ) ) {
+				$color = 'rgba( ' . pootlepb_hex2rgb( $color ) . ', ' . ( 1 - $set['portfolio-hover-color-opacity'] ) . ' )';
+			}
+			$attr['style'] .= ' background:' . $color . ';';
+		}
+
+	}
+
+	protected function hover_animation( &$attr, $set ) {
+
+		if ( !empty( $this->row_animation ) ) {
+			$attr['data-portfolio-animate'] = 'animated ' . $this->row_animation;
+		}
+	}
+
+	/**
+	 * Render the Content Panel.
+	 *
+	 * @param string $widget_info The widget class name.
+	 *
+	 * @since 0.1.0
+	 */
+	public function portfolio_container_close( $info ) {
+		$set = json_decode( $info['info']['style'], true );
+
+		if ( !empty( $set['portfolio-item'] ) ) {
+			echo '</div>';
+		}
 	}
 
 	/**
@@ -132,6 +189,12 @@ class PB_Portfolio_Add_on{
 		if ( !empty( $set['portfolio-layout'] ) ) {
 			$attr['class'][] = 'portfolio-layout-' . $set['portfolio-layout'];
 		}
+
+		$this->row_animation = false;
+		if ( !empty( $set['portfolio-animation'] ) ) {
+			$this->row_animation = $set['portfolio-animation'];
+		}
+
 		return $attr;
 	}
 
@@ -154,17 +217,29 @@ class PB_Portfolio_Add_on{
 	 * @return array Tabs
 	 */
 	public function content_block_fields( $f ) {
-		$f['make-portfolio-item'] = array(
+		$f['portfolio-item'] = array(
 			'name' => 'Make this a porfolio item',
 			'type' => 'checkbox',
 			'priority' => 1,
-			'tab' => 'Portfolio',
+			'tab' => 'portfolio',
 		);
 		$f['portfolio-bg'] = array(
 			'name' => 'Background image',
 			'type' => 'upload',
 			'priority' => 2,
-			'tab' => 'Portfolio',
+			'tab' => 'portfolio',
+		);
+		$f['portfolio-hover-color'] = array(
+			'name' => 'Hover color',
+			'type' => 'color',
+			'priority' => 3,
+			'tab' => 'portfolio',
+		);
+		$f['portfolio-hover-color-opacity'] = array(
+			'name' => 'Hover color Transparency',
+			'type' => 'slider',
+			'priority' => 4,
+			'tab' => 'portfolio',
 		);
 		return $f;
 	}
@@ -177,13 +252,25 @@ class PB_Portfolio_Add_on{
 	public function row_tab_fields( $f ) {
 		$f['portfolio-layout'] = array(
 			'name' => __( 'Portfolio layout', 'vantage' ),
-			'tab' => 'Portfolio',
+			'tab' => 'portfolio',
 			'type' => 'select',
 			'priority' => 1,
 			'options' => array(
 				'' => 'Please choose...',
 				'square' => 'Square',
 				'masonry' => 'Masonry',
+			),
+			'default' => '',
+		);
+		$f['portfolio-animation'] = array(
+			'name' => __( 'Animation', 'vantage' ),
+			'tab' => 'portfolio',
+			'type' => 'select',
+			'priority' => 1,
+			'options' => array(
+				'' => 'Please choose...',
+				'pulse' => 'Pulse',
+				'flipInX' => 'FlipInX',
 			),
 			'default' => '',
 		);
@@ -198,7 +285,18 @@ class PB_Portfolio_Add_on{
 		$url = self::$url;
 
 		wp_enqueue_style( $token . '-css', $url . '/assets/front-end.css' );
+		wp_enqueue_style( $token . '-animate', $url . '/assets/animate.css' );
 		wp_enqueue_script( $token . '-js', $url . '/assets/front-end.js', array( 'jquery' ) );
+	} // End enqueue()
+
+	/**
+	 * Enqueue the css and js to front end
+	 */
+	public function admin_enqueue() {
+		$token = self::$token;
+		$url = self::$url;
+
+		wp_enqueue_script( $token . '-admin-js', $url . '/assets/admin.js', array( 'jquery' ) );
 	} // End enqueue()
 
 }
