@@ -85,6 +85,12 @@ class Pootle_PB_Portfolios{
 
 			$this->add_actions();
 			$this->add_filters();
+
+			// Pootlepress API Manager
+			/** Including PootlePress_API_Manager class */
+			require_once( plugin_dir_path( __FILE__ ) . 'pp-api/class-pp-api-manager.php' );
+			/** Instantiating PootlePress_API_Manager */
+			new PootlePress_API_Manager( self::$token, 'pootle page builder portfolios', self::$version, __FILE__, self::$token );
 		}
 	} // End init()
 
