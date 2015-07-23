@@ -4,12 +4,12 @@
  * @property string hover_color
  * @property string row_animation
  */
-class PB_Portfolio_Add_on{
+class Pootle_PB_Portfolios{
 
 	/**
-	 * PB_Portfolio_Add_on Instance of main plugin class.
+	 * Pootle_PB_Portfolios Instance of main plugin class.
 	 *
-	 * @var 	object PB_Portfolio_Add_on
+	 * @var 	object Pootle_PB_Portfolios
 	 * @access  private
 	 * @since 	1.0.0
 	 */
@@ -31,7 +31,7 @@ class PB_Portfolio_Add_on{
 	public static $version;
 
 	/**
-	 * PB - Portfolio Add-on plugin directory URL.
+	 * pootle page builder portfolios plugin directory URL.
 	 *
 	 * @var 	string Plugin directory
 	 * @access  private
@@ -40,7 +40,7 @@ class PB_Portfolio_Add_on{
 	public static $url;
 
 	/**
-	 * PB - Portfolio Add-on plugin directory Path.
+	 * pootle page builder portfolios plugin directory Path.
 	 *
 	 * @var 	string Plugin directory
 	 * @access  private
@@ -49,12 +49,12 @@ class PB_Portfolio_Add_on{
 	public static $path;
 
 	/**
-	 * Main PB - Portfolio Add-on Instance
+	 * Main pootle page builder portfolios Instance
 	 *
 	 * Ensures only one instance of Storefront_Extension_Boilerplate is loaded or can be loaded.
 	 *
 	 * @since 1.0.0
-	 * @return PB_Portfolio_Add_on instance
+	 * @return Pootle_PB_Portfolios instance
 	 */
 	public static function instance() {
 		if ( null == self::$_instance ) {
@@ -71,7 +71,7 @@ class PB_Portfolio_Add_on{
 	 */
 	private function __construct() {
 
-		self::$token =     'pb-portfolio-addon';
+		self::$token =     'pootle-pb-portfolio';
 		self::$url =       plugin_dir_url( __FILE__ );
 		self::$path =      plugin_dir_path( __FILE__ );
 		self::$version =   '1.0.0';
@@ -261,7 +261,7 @@ class PB_Portfolio_Add_on{
 			'name' => __( 'Animation', 'vantage' ),
 			'tab' => 'portfolio',
 			'type' => 'select',
-			'priority' => 1,
+			'priority' => 2,
 			'options' => array(
 				'' => 'Please choose...',
 				'pulse' => 'Pulse',

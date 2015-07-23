@@ -9,13 +9,16 @@ jQuery(function ($) {
 
     $('html').on('pootlepb_admin_content_block_title', function (e, $t, data) {
 
-        if( typeof data.info == 'undefined' ) {
-            var $d = $t.data('dialog');
-            if ( $d.find('.content-block-portfolio-item').is(':checked') ) {
+        if( typeof data == 'undefined' ) {
+            return;
+        }
+        if( typeof data.info != 'undefined' ) {
+            if ( data.info.style['portfolio-item'] ) {
                 $t.find('h4').html('Portfolio Item');
             }
-        } else {
-            if ( data.info.style['portfolio-item'] ) {
+        } else if( $t.data('dialog') ) {
+            var $d = $t.data('dialog');
+            if ( $d.find('.content-block-portfolio-item').is(':checked') ) {
                 $t.find('h4').html('Portfolio Item');
             }
         }

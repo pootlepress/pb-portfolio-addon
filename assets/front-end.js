@@ -1,7 +1,7 @@
 /**
  * Plugin front end scripts
  *
- * @package PB_Portfolio_Add_on
+ * @package Pootle_PB_Portfolios
  * @version 0.1.0
  */
 jQuery(function ($) {

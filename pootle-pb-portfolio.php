@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: PB - Portfolio Add-on
+Plugin Name: pootle page builder portfolios
 Plugin URI: http://pootlepress.com/
 Description: Boilerplate for fast track Pootle Page Builder Addon Development
 Author: Shramee
@@ -11,6 +11,6 @@ Author URI: http://shramee.com/
 /**
  * Including Main Plugin class
  */
-require_once 'class-pb-portfolio-addon.php';
+require_once 'class-pootle-pb-portfolio.php';
 
-PB_Portfolio_Add_on::instance();
+Pootle_PB_Portfolios::instance();
