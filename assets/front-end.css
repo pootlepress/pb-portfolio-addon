@@ -4,16 +4,34 @@
  * @package Pootle_PB_Portfolios
  * @version 0.1.0
  */
-.panel-row-style.portfolio-layout-square{
+.portfolio-layout-square, .panel-row-style.portfolio-layout-circle{
     opacity:0;
+}
+
+.portfolio-layout-circle .ppb-portfolio-block, .portfolio-layout-circle .ppb-portfolio-item{
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+
+.portfolio-layout-circle .ppb-portfolio-item{
+    padding: 16%;
     text-align: center;
 }
 
-.pb-addon-portfolio-item{
+.ppb-portfolio-block > a {
+    color: inherit;
+    font: inherit;
+    text-decoration: inherit;
+    background: none;
+    outline: none;
+    border: none;
+}
+
+.ppb-portfolio-item{
     opacity: 0;
     position: relative;
     transition: 0.25s opacity;
 }
-.panel:hover .pb-addon-portfolio-item{
+.ppb-block:hover .ppb-portfolio-item{
     opacity: 1;
 }
