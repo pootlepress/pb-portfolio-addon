@@ -364,6 +364,7 @@ class Pootle_PB_Portfolios{
 		);
 		$f['portfolio-hover-color-opacity'] = array(
 			'name' => 'Hover color Transparency',
+			'default' => '0.5',
 			'type' => 'slider',
 			'priority' => 4,
 			'tab' => 'portfolio',

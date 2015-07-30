@@ -338,7 +338,7 @@ if ( ! class_exists( 'PootlePress_API_Manager' ) ) {
 				return;
 			} ?>
 			<div id="message" class="error">
-				<p><?php printf( __( $this->name . ' API License Key has not been activated, so the plugin is inactive! %sClick here%s to activate the license key and the plugin.', $this->text_domain ), '<a href="' . esc_url( admin_url( 'options-general.php?page=' . $this->token . '_dashboard' ) ) . '">', '</a>' ); ?></p>
+				<p><?php printf( __( $this->name . ' API License Key has not been activated, so the add on is inactive! %sClick here%s to activate the license key and the add on.', $this->text_domain ), '<a href="' . esc_url( admin_url( 'options-general.php?page=' . $this->token . '_dashboard' ) ) . '">', '</a>' ); ?></p>
 			</div>
 		<?php
 		}
