@@ -4,6 +4,7 @@
  * @property string hover_color
  * @property string hover_color_opacity
  * @property string row_animation
+ * @property bool pofo_enabled
  */
 class Pootle_PB_Portfolios{
 
@@ -96,13 +97,18 @@ class Pootle_PB_Portfolios{
 	} // End init()
 
 	private function add_actions() {
-		//Adding front end JS and CSS in /assets folder
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		//Enqueue admin JS and CSS
 		add_action( 'pootlepb_enqueue_admin_scripts', array( $this, 'admin_enqueue' ) );
+		//Portfolio tab js
+		add_action( 'pootlepb_row_settings_portfolio_tab', array( $this, 'portfolio_row_js' ), 70 );
+		//Add portfolio dialog
+		add_action( 'pootlepb_metabox_end', array( $this, 'add_pofo_dialog' ) );
+
+		//Enqueue public JS and CSS
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
 		//Content Portfolio container
 		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container' ), 25 );
 		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container_close' ), 70 );
-		add_action( 'pootlepb_row_settings_portfolio_tab', array( $this, 'portfolio_row_js' ), 70 );
 	} // End add_actions()
 
 	private function add_filters() {
@@ -117,6 +123,8 @@ class Pootle_PB_Portfolios{
 		//Row style panel tab
 		add_filter( 'pootlepb_row_settings_tabs', array( $this, 'add_tab' ) );
 		add_filter( 'pootlepb_row_settings_fields', array( $this, 'row_tab_fields' ) );
+		//Adding Button in add to panel pane
+		add_filter( 'pootlepb_add_to_panel_buttons', array( $this, 'add_portfolio_button' ) );
 
 	} // End add_filters()
 
@@ -235,8 +243,13 @@ class Pootle_PB_Portfolios{
 	 */
 	public function row_attr( $attr, $set ) {
 
+		$this->pofo_enabled = false;
+
 		if ( !empty( $set['portfolio-layout'] ) ) {
-			$attr['class'][] = 'portfolio-layout-' . $set['portfolio-layout'];
+			$attr['class'][] = 'ppb-portfolio portfolio-layout-' . $set['portfolio-layout'];
+			$this->pofo_enabled = true;
+		} else {
+			return $attr;
 		}
 
 		$this->row_animation = false;
@@ -369,7 +382,6 @@ class Pootle_PB_Portfolios{
 			'priority' => 4,
 			'tab' => 'portfolio',
 		);
-
 		return $f;
 	}
 
@@ -393,5 +405,34 @@ class Pootle_PB_Portfolios{
 		$url = self::$url;
 
 		wp_enqueue_script( $token . '-admin-js', $url . '/assets/admin.js', array( 'jquery' ) );
+	}
+
+	public function add_portfolio_button( $buttons ) {
+		$preb_name = $buttons['prebuilt-set'];
+		unset( $buttons['prebuilt-set'] );
+		$buttons['add-pofo'] = 'Add Portfolio';
+		$buttons['prebuilt-set'] = $preb_name;
+		return $buttons;
+	}
+
+	public function add_pofo_dialog( $buttons ) {
+	?>
+		<div id="pofo-add-dialog" data-title="<?php esc_attr_e( 'Add Portfolio', 'ppb-panels' ) ?>"
+		     class="panels-admin-dialog" style="text-align: center">
+			<p>
+				<label>
+					<strong>
+						<?php _e( 'Select a Template ', 'ppb-panels' ) ?>
+					</strong>
+				</label>
+			</p>
+			<p><select id="pofo-add-dialog-input" name="rows_cols" class="small-text">
+					<option value="2x2">2 x 2</option>
+					<option value="3x3">3 x 3</option>
+					<option value="4x3">4 x 3</option>
+				</select>
+			</p>
+		</div>
+	<?php
 	}
 }

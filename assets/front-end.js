@@ -8,29 +8,30 @@ jQuery(function ($) {
 
     //Put all jquery code in here
     resize_pofo_items = function() {
-        $('.panel-row-style.portfolio-layout-square, .panel-row-style.portfolio-layout-circle').each(function () {
-            var $t = $(this);
+        $('.panel-row-style.ppb-portfolio').each(function () {
+            var $row = $(this),
+                gutter = parseFloat( $row.find('.ppb-col').eq(1).css('padding-right') );
 
-            $t.find('.ppb-portfolio-block').each(function () {
+            $row.find('.ppb-block').not(':last-child').css('margin-bottom', gutter*2);
+
+            $row.find('.ppb-portfolio-block').each(function () {
                 var $t = $(this),
                     wid = $t.width(),
                     pofo = $t.find('.ppb-portfolio-item'),
                     pofoHi = pofo.height();
-                $t.css('height', wid);
 
-                pofo.css({
-                    padding: (wid - pofoHi)/2 + 'px ' + (wid*0.16) + 'px'
-                });
+                //Creating square elements
+                if ( $row.hasClass('portfolio-layout-square') || $row.hasClass('portfolio-layout-circle') ){
+                    pofo.css({
+                        padding: (wid - pofoHi - 2)/2 + 'px ' + (wid*0.16) + 'px'
+                    });
+                }
             });
 
-            $t.css('opacity', '1');
+            $row.css('opacity', '1');
         });
     };
     resize_pofo_items();
-
-    $('[data-ppb-pofo-item-link]').click(function () {
-
-    });
 
     $(window).resize(resize_pofo_items);
     $('.ppb-block').hover(
