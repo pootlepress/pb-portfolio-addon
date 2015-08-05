@@ -106,6 +106,8 @@ class Pootle_PB_Portfolios{
 
 		//Enqueue public JS and CSS
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		//
+		add_action( 'pootlepb_content_block_portfolio_tab', array( $this, 'portfolio_style_message' ), 70 );
 		//Content Portfolio container
 		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container' ), 25 );
 		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container_close' ), 70 );
@@ -113,6 +115,8 @@ class Pootle_PB_Portfolios{
 
 	private function add_filters() {
 
+		//Content block attributes apply
+		add_filter( 'pootlepb_welcome_message', array( $this, 'welcome_message' ), 10, 3 );
 		//Content block attributes apply
 		add_filter( 'pootlepb_content_block_attributes', array( $this, 'content_block' ), 10, 2 );
 		//Row attributes
@@ -127,6 +131,23 @@ class Pootle_PB_Portfolios{
 		add_filter( 'pootlepb_add_to_panel_buttons', array( $this, 'add_portfolio_button' ) );
 
 	} // End add_filters()
+
+	public function welcome_message( $message, $current_user, $visit_count ) {
+		global $pagenow;
+		if ( 0 < $visit_count && 'post-new.php' == $pagenow && ! get_user_meta( $current_user->ID, 'pootlepb_pofo_welcome' ) ) {
+			update_user_meta( $current_user->ID, 'pootlepb_pofo_welcome', $visit_count );
+			return "
+<script>
+	jQuery(function($){
+		$('.add-button').removeClass('pootle');
+		$('.add-pofo.add-button').addClass('pootle');
+	})
+</script>
+<div id='ppb-hello-user' class='visit-count-1'>Click the 'Add Portfolio' button above to create your portfolio</div>
+			";
+		}
+		return $message;
+	}
 
 	/**
 	 * Sets content block attributes
@@ -156,8 +177,10 @@ class Pootle_PB_Portfolios{
 				$('[dialog-field="portfolio-link"]').change(function(){
 					if ( 'link' == $(this).val() ) {
 						$('.field-portfolio-link-url').show();
+						$('.field-portfolio-link-new-page').show();
 					} else {
 						$('.field-portfolio-link-url').val('').hide();
+						$('.field-portfolio-link-new-page').prop( "checked", false ).hide();
 					}
 				});
 			})
@@ -165,6 +188,25 @@ class Pootle_PB_Portfolios{
 	<?php
 	}
 
+
+	/**
+	 * Add portfolio js to row styling panel
+	 * @since 0.1.0
+	 */
+	public function portfolio_style_message() {
+		?>
+		You can set a background color for this portfolio item in <a id="ppb-pofo-switch-to-style-tab" href="#">Styles</a>
+		<script>
+			jQuery(function($){
+				$('#ppb-pofo-switch-to-style-tab').click(function(e){
+					e.preventDefault();
+					var i = $('.widget-dialog-pootle_pb_content_block .ppb-tabs-anchors').index($('[href$="pootle-style-tab"]'))
+					$('.ppb-add-content-panel').ppbTabs( "option", "active", i );
+				});
+			})
+		</script>
+		<?php
+	}
 
 	/**
 	 * Render the Content Panel.
@@ -193,7 +235,7 @@ class Pootle_PB_Portfolios{
 	private function hover_color( &$attr, $set ) {
 
 		if ( ! empty( $set['portfolio-bg-color'] ) ) {
-			$attr['style'] .= 'background:rgba( ' . pootlepb_hex2rgb( $set['portfolio-bg-color'] ) . ', ' . $this->hover_color_opacity . ' );';
+			$attr['style'] .= 'rgba:dg;background:rgba( ' . pootlepb_hex2rgb( $set['portfolio-bg-color'] ) . ', ' . $this->hover_color_opacity . ' );';
 		} else if ( ! empty( $this->hover_color ) ) {
 			$attr['style'] .= ' background:' . $this->hover_color . ';';
 		}
@@ -211,7 +253,11 @@ class Pootle_PB_Portfolios{
 		if ( ! empty( $set['portfolio-link'] ) ) {
 			$attr['style'] .= 'cursor:pointer;';
 			if ( 'link' == $set['portfolio-link'] ) {
-				echo '<a href="' . $set['portfolio-link-url'] . '">';
+				echo '<a ';
+				if ( ! empty( $set['portfolio-link-new-page'] ) ) {
+					echo 'target="_blank" ';
+				}
+				echo 'href="' . $set['portfolio-link-url'] . '">';
 			} else {
 				add_thickbox();
 				echo '<a class="thickbox" href="' . $set['portfolio-bg'] . '?keepThis=true&TB_iframe=true&height=250&width=400">';
@@ -231,6 +277,9 @@ class Pootle_PB_Portfolios{
 
 		if ( ! empty( $set['portfolio-item'] ) ) {
 			echo '</div>';
+			if ( ! empty( $set['portfolio-link'] ) ) {
+				echo '</a>';
+			}
 		}
 	}
 
@@ -258,7 +307,7 @@ class Pootle_PB_Portfolios{
 		}
 
 		$this->hover_color = false;
-		$this->hover_color_opacity = 1;
+		$this->hover_color_opacity = 0.5;
 		if ( !empty( $set['portfolio-hover-color'] ) ) {
 			$this->hover_color = $set['portfolio-hover-color'];
 			if ( ! empty( $set['portfolio-hover-color-opacity'] ) ) {
@@ -302,16 +351,16 @@ class Pootle_PB_Portfolios{
 			'tab' => 'portfolio',
 		);
 		$f['portfolio-bg-color'] = array(
-			'name' => 'Background color',
+			'name' => 'Hover color',
 			'type' => 'color',
-			'priority' => 3,
+			'priority' => 4,
 			'tab' => 'portfolio',
 		);
 		$f['portfolio-link'] = array(
 			'name' => __( 'Link to', 'vantage' ),
 			'tab' => 'portfolio',
 			'type' => 'select',
-			'priority' => 4,
+			'priority' => 5,
 			'options' => array(
 				'' => 'None',
 				'link' => 'Webpage',
@@ -323,7 +372,14 @@ class Pootle_PB_Portfolios{
 			'name' => __( 'Webpage URL', 'vantage' ),
 			'tab' => 'portfolio',
 			'type' => 'text',
-			'priority' => 5,
+			'priority' => 6,
+			'default' => '',
+		);
+		$f['portfolio-link-new-page'] = array(
+			'name' => __( 'Open in a new page', 'vantage' ),
+			'tab' => 'portfolio',
+			'type' => 'checkbox',
+			'priority' => 7,
 			'default' => '',
 		);
 		return $f;
@@ -422,15 +478,13 @@ class Pootle_PB_Portfolios{
 			<p>
 				<label>
 					<strong>
-						<?php _e( 'Select a Template ', 'ppb-panels' ) ?>
+						<?php _e( 'Type in the number of rows and columns', 'ppb-panels' ) ?>
 					</strong>
 				</label>
 			</p>
-			<p><select id="pofo-add-dialog-input" name="rows_cols" class="small-text">
-					<option value="2x2">2 x 2</option>
-					<option value="3x3">3 x 3</option>
-					<option value="4x3">4 x 3</option>
-				</select>
+			<p>
+				<input id="pofo-add-dialog-num-cols" type="number" class="small-text" value="4"> x
+				<input id="pofo-add-dialog-num-rows" type="number" class="small-text" value="4">
 			</p>
 		</div>
 	<?php

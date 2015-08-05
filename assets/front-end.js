@@ -10,7 +10,9 @@ jQuery(function ($) {
     resize_pofo_items = function() {
         $('.panel-row-style.ppb-portfolio').each(function () {
             var $row = $(this),
-                gutter = parseFloat( $row.find('.ppb-col').eq(1).css('padding-right') );
+                gutter = parseFloat( $row.find('.ppb-col').eq(0).css('padding-right') );
+
+            console.log(gutter);
 
             $row.find('.ppb-block').not(':last-child').css('margin-bottom', gutter*2);
 

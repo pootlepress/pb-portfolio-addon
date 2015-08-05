@@ -28,20 +28,27 @@ jQuery(function ($) {
         autoOpen: false,
         title: $('#pofo-add-dialog').attr('data-title'),
         open: function () {
-            $(this).find('select').val('3x3').select();
+            $('#pofo-add-dialog-num-cols').val(4);
+            $('#pofo-add-dialog-num-rows').val(4);
         },
         width: 430,
         buttons: {
             Add: function(){
-                var grid = $(this).find('select').val().split('x')
-                var $gridContainer = window.panels.createGrid(grid[0], null, {'portfolio-layout':'square'});
+                var grid = [
+                    $('#pofo-add-dialog-num-cols').val(),
+                    $('#pofo-add-dialog-num-rows').val()
+                ];
+
+                console.log( grid );
+
+                var $gridContainer = window.panels.createGrid(grid[0], null, {'portfolio-hover-color': '#cccccc', 'portfolio-hover-color-opacity': '0.5', 'portfolio-layout':'square'});
                 panels.ppbGridEvents($gridContainer);
 
                 for( var x = 0; x < grid[0]; x++ ){
                     panels.removePaddingAnimated( $(this).closest('.grid-container') );
 
-                    for( var y = 0; y < grid[0]; y++ ) {
-                        var $t = $gridContainer.find('.cell').eq(y);
+                    for( var y = 0; y < grid[1]; y++ ) {
+                        var $t = $gridContainer.find('.cell').eq(x);
                         add_pofo_block($t);
                     }
                 }
