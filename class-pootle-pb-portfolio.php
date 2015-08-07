@@ -225,7 +225,7 @@ class Pootle_PB_Portfolios extends Pootle_PB_Portfolios_Admin {
 	private function hover_color( &$attr, $set ) {
 
 		if ( ! empty( $set['portfolio-bg-color'] ) ) {
-			$attr['style'] .= 'rgba:dg;background:rgba( ' . pootlepb_hex2rgb( $set['portfolio-bg-color'] ) . ', ' . $this->hover_color_opacity . ' );';
+			$attr['style'] .= 'background:rgba( ' . pootlepb_hex2rgb( $set['portfolio-bg-color'] ) . ', ' . $this->hover_color_opacity . ' );';
 		} else if ( ! empty( $this->hover_color ) ) {
 			$attr['style'] .= ' background:' . $this->hover_color . ';';
 		}

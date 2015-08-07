@@ -45,6 +45,7 @@ class Pootle_PB_Portfolios_Admin {
 		$url = Pootle_PB_Portfolios::$url;
 
 		wp_enqueue_script( $token . '-admin-js', $url . '/assets/admin.js', array( 'jquery' ) );
+		wp_enqueue_style( $token . '-admin-css', $url . '/assets/admin.css' );
 	}
 
 	/**
