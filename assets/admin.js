@@ -25,45 +25,84 @@ jQuery(function ($) {
             }
         }
     });
-    $('#pofo-add-dialog').ppbDialog({
-        dialogClass: 'panels-admin-dialog',
-        autoOpen: false,
-        title: $('#pofo-add-dialog').attr('data-title'),
-        open: function () {
-            $('#pofo-add-dialog-num-cols').val(4);
-            $('#pofo-add-dialog-num-rows').val(4);
-        },
-        width: 430,
-        buttons: {
-            Add: function(){
-                var grid = [
-                    $('#pofo-add-dialog-num-cols').val(),
-                    $('#pofo-add-dialog-num-rows').val()
-                ];
+    ppbPofo.addPofoDialog = $('#pofo-add-dialog');
+    ppbPofo.addPofoDialog
+        .ppbDialog({
+            dialogClass: 'panels-admin-dialog',
+            autoOpen: false,
+            title: ppbPofo.addPofoDialog.attr('data-title'),
+            open: function () {
+                $('#pofo-add-dialog-num-cols').val(4);
+                $('#pofo-add-dialog-num-rows').val(4);
+            },
+            width: 430,
+            buttons: {
+                Add: function(){
+                    var grid = [
+                        $('#pofo-add-dialog-num-cols').val(),
+                        $('#pofo-add-dialog-num-rows').val()
+                    ];
 
-                console.log( grid );
+                    var $gridContainer = window.panels.createGrid(grid[0], null, {'portfolio-hover-color': '#cccccc', 'portfolio-hover-color-opacity': '0.5', 'portfolio-layout':'square'});
+                    panels.ppbGridEvents($gridContainer);
 
-                var $gridContainer = window.panels.createGrid(grid[0], null, {'portfolio-hover-color': '#cccccc', 'portfolio-hover-color-opacity': '0.5', 'portfolio-layout':'square'});
-                panels.ppbGridEvents($gridContainer);
+                    for( var x = 0; x < grid[0]; x++ ){
+                        panels.removePaddingAnimated( $(this).closest('.grid-container') );
 
-                for( var x = 0; x < grid[0]; x++ ){
-                    panels.removePaddingAnimated( $(this).closest('.grid-container') );
-
-                    for( var y = 0; y < grid[1]; y++ ) {
-                        var $t = $gridContainer.find('.cell').eq(x);
-                        add_pofo_block($t);
+                        for( var y = 0; y < grid[1]; y++ ) {
+                            var $t = $gridContainer.find('.cell').eq(x);
+                            add_pofo_block($t);
+                        }
                     }
+                    $gridContainer.hide();
+                    $gridContainer.slideDown();
+                    $('#pofo-add-dialog').ppbDialog('close')
                 }
-                $gridContainer.hide();
-                $gridContainer.slideDown();
-                $('#pofo-add-dialog').ppbDialog('close')
             }
-        }
-    });
+        });
+
+    ppbPofo.editBgDialog = $('#pofo-edit-bgs-dialog');
+    ppbPofo.editBgDialog
+        .ppbDialog({
+            dialogClass: 'panels-admin-dialog',
+            autoOpen: false,
+            title: ppbPofo.editBgDialog.attr('data-title'),
+            open: function () {
+                ppbPofo.editBgDialog.ppbDialog( "option", "width", $(window).width() - 50 );
+                ppbPofo.editBgDialog.ppbDialog( "option", "height", $(window).height() - 50 );
+                var imgs = ppbPofo.imgSelected,
+                    imgWrap = $('#pofo-edit-bgs-dialog .images'),
+                    $row = $('#grid-styles-dialog').data('container');
+                imgWrap.attr( 'class', 'images num-cols-' + $row.find('.cell').length );
+
+                $.each( imgs, function( k, v ){
+                    imgWrap.append( '<img src="' + v + '">' );
+                });
+                imgWrap.sortable({
+                    items : 'img'
+                })
+            },
+            width: $(window).width() - 50,
+            height: $(window).height() - 50,
+            buttons: {
+                Done: function(){
+                    var images = [],
+                        imgWrap = $('#pofo-edit-bgs-dialog .images');
+                    imgWrap.children('img').each(function(i){
+                        images[i] = $(this).attr('src');
+                    });
+                    ppbPofo.editBgDialog.data('BGimgInput').val(JSON.stringify(images));
+                    imgWrap.html('');
+                    ppbPofo.imgSelected = images;
+                    ppbPofo.updateCBbgImg();
+                    ppbPofo.editBgDialog.ppbDialog('close')
+                }
+            }
+        });
 
     $('.add-pofo').click(function(e){
         e.preventDefault();
-        $('#pofo-add-dialog').ppbDialog('open')
+        ppbPofo.addPofoDialog.ppbDialog('open')
     });
 
     add_pofo_block = function($t) {
@@ -88,9 +127,13 @@ jQuery(function ($) {
         $butts.off( 'click' );
         $slImg.click(ppbPofo.selectImg);
         $srtImg.click(function(){
-            var $t = $(this);
-            alert($t.siblings( 'input').val());
-
+            if ( ! $(this).siblings( 'input').val() ) {
+                $slImg.click();
+                return;
+            }
+            ppbPofo.editBgDialog.data('BGimgInput', $(this).siblings( 'input'))
+            ppbPofo.imgSelected = $.parseJSON( $(this).siblings( 'input').val() );
+            ppbPofo.editBgDialog.ppbDialog('open');
         })
     });
 
@@ -99,10 +142,7 @@ jQuery(function ($) {
 
         var $textField = $(this).siblings('input');
         // If the media frame already exists, reopen it.
-        if (ppbPofo.frame) {
-            ppbPofo.frame.open();
-            return;
-        }
+
         // Create the media frame.
         ppbPofo.frame = wp.media.frames.ppbPofoFrame = wp.media({
             title: 'Choose Background Images',
@@ -114,33 +154,33 @@ jQuery(function ($) {
             var attachment = ppbPofo.frame.state().get('selection').toJSON();
 
             //Get all selected images url in an object
-            var images = {};
+            ppbPofo.imgSelected = {};
             $.each(attachment, function( k, v ){
-                images[k] = v.url;
+                ppbPofo.imgSelected[k] = v.url;
             });
 
-            ppbPofo.updateCBbgImg(images);
+            ppbPofo.updateCBbgImg();
 
             //Put the selected images in $textField
             $textField
-                .val(JSON.stringify( images ))
+                .val(JSON.stringify( ppbPofo.imgSelected ))
                 .change();
         });
         // Finally, open the modal
         ppbPofo.frame.open();
     };
     /** Updates Content Block background images */
-    ppbPofo.updateCBbgImg = function( images ) {
+    ppbPofo.updateCBbgImg = function() {
         var $row = $('#grid-styles-dialog').data('container'),
             $CBstyles = $row.find('[name*="][info][style]"]');
-        $.each(images, function (k, v) {
+        $.each( ppbPofo.imgSelected, function (k, v) {
+            if ( k == $CBstyles.length ){
+                return false;
+            }
             var $t = $CBstyles.eq(k);
-            console.log( $t.val() )
             var styles = $.parseJSON( $t.val() );
             styles['portfolio-bg']= v;
             $t.val(JSON.stringify(styles));
-            console.log( $t.val() )
-            console.log( '' )
-        });
+        } );
     };
 });

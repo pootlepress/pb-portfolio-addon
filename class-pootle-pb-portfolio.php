@@ -188,8 +188,6 @@ class Pootle_PB_Portfolios extends Pootle_PB_Portfolios_Admin {
 	public function content_block_attr( $attr, $set ) {
 		if ( !empty( $set['portfolio-bg'] ) ) {
 			$attr['style'] .= 'background: url(' . $set['portfolio-bg'] . ') center/cover;';
-		} elseif ( !empty( $this->bg_images[ $this->block_now ] ) ) {
-			$attr['style'] .= 'background: url(' . $this->bg_images[ $this->block_now ] . ') center/cover;';
 		}
 		if ( !empty( $set['portfolio-item'] ) ) {
 			$attr['class'][] = 'ppb-portfolio-block';
