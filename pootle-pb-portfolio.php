@@ -8,9 +8,13 @@ Version: 0.1
 Author URI: http://shramee.com/
 */
 
+/** Plugin admin class */
+require 'inc/class-admin.php';
+/** Plugin public class */
+require 'inc/class-public.php';
 /**
  * Including Main Plugin class
  */
 require_once 'class-pootle-pb-portfolio.php';
-
-Pootle_PB_Portfolios::instance();
+/** Instantiating main plugin class */
+Pootle_PB_Portfolios::instance( __FILE__ );

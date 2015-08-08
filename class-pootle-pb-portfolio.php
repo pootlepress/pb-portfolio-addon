@@ -1,89 +1,97 @@
 <?php
 
-/** Tabs and fields class */
-require 'inc/class-admin.php';
-
 /**
- * Allows adding cool portfolio to ppb
- *
- * @property string hover_color
- * @property array bg_images
- * @property int block_now
- * @property string hover_color_opacity
- * @property string row_animation
- * @property bool pofo_enabled
+ * Pootle Page Builder Addon Boilerplate main class
+ * @static string $token Plugin token
+ * @static string $file Plugin __FILE__
+ * @static string $url Plugin root dir url
+ * @static string $path Plugin root dir path
+ * @static string $version Plugin version
  */
 class Pootle_PB_Portfolios extends Pootle_PB_Portfolios_Admin {
 
 	/**
-	 * Pootle_PB_Portfolios Instance of main plugin class.
-	 *
-	 * @var    object Pootle_PB_Portfolios
-	 * @access  protected
-	 * @since    1.0.0
+	 * @var 	Pootle_PB_Portfolios Instance
+	 * @access  private
+	 * @since 	1.0.0
 	 */
-	protected static $_instance = null;
+	private static $_instance = null;
 
 	/**
-	 * The token.
-	 * @var     string
+	 * @var     string Token
 	 * @access  public
 	 * @since   1.0.0
 	 */
 	public static $token;
 
 	/**
-	 * The version number.
-	 * @var     string
+	 * @var     string Version
 	 * @access  public
 	 * @since   1.0.0
 	 */
 	public static $version;
 
 	/**
-	 * pootle page builder portfolios plugin directory URL.
-	 *
-	 * @var 	string Plugin directory
-	 * @access  private
+	 * @var 	string Plugin main __FILE__
+	 * @access  public
+	 * @since 	1.0.0
+	 */
+	public static $file;
+
+	/**
+	 * @var 	string Plugin directory url
+	 * @access  public
 	 * @since 	1.0.0
 	 */
 	public static $url;
 
 	/**
-	 * pootle page builder portfolios plugin directory Path.
-	 *
-	 * @var 	string Plugin directory
-	 * @access  private
+	 * @var 	string Plugin directory path
+	 * @access  public
 	 * @since 	1.0.0
 	 */
 	public static $path;
 
 	/**
-	 * Main pootle page builder portfolios Instance
+	 * @var 	Pootle_PB_Portfolios_Admin Instance
+	 * @access  public
+	 * @since 	1.0.0
+	 */
+	public $admin;
+
+	/**
+	 * @var 	Pootle_PB_Portfolios_Public Instance
+	 * @access  public
+	 * @since 	1.0.0
+	 */
+	public $public;
+
+	/**
+	 * Main Pootle Page Builder Addon Boilerplate Instance
 	 *
 	 * Ensures only one instance of Storefront_Extension_Boilerplate is loaded or can be loaded.
 	 *
 	 * @since 1.0.0
-	 * @return Pootle_PB_Portfolios instance
+	 * @return Pootle_Page_Builder_Addon_Boilerplate instance
 	 */
-	public static function instance() {
+	public static function instance( $file ) {
 		if ( null == self::$_instance ) {
-			self::$_instance = new self();
+			self::$_instance = new self( $file );
 		}
-
 		return self::$_instance;
 	} // End instance()
 
 	/**
 	 * Constructor function.
-	 *
+	 * @param string $file __FILE__ of the main plugin
 	 * @access  private
 	 * @since   1.0.0
 	 */
-	protected function __construct() {
+	private function __construct( $file ) {
 		self::$token =     'pootle-pb-portfolio';
-		self::$url =       plugin_dir_url( __FILE__ );
-		self::$path =      plugin_dir_path( __FILE__ );
+		self::$file    =   plugin_dir_path( $file );
+		self::$url     =   plugin_dir_url( $file );
+		self::$path    =   plugin_dir_path( $file );
 		self::$version =   '1.0.0';
 
 		add_action( 'init', array( $this, 'init' ) );
@@ -91,11 +99,17 @@ class Pootle_PB_Portfolios extends Pootle_PB_Portfolios_Admin {
 
 	public function init() {
 		if ( class_exists( 'Pootle_Page_Builder' ) ) {
-			/** In Pootle_PB_Portfolios_Admin */
-			$this->admin_hooks();
-			$this->public_hooks();
 
-			// Pootlepress API Manager
+
+			//Initiate admin
+			$this->_admin();
+
+			//Initiate public
+			$this->_public();
+
+			//Mark this add on as active
+			add_filter( 'pootlepb_installed_add_ons', array( $this, 'add_on_active' ) );
+
 			/** Including PootlePress_API_Manager class */
 			require_once( plugin_dir_path( __FILE__ ) . 'pp-api/class-pp-api-manager.php' );
 			/** Instantiating PootlePress_API_Manager */
@@ -103,185 +117,66 @@ class Pootle_PB_Portfolios extends Pootle_PB_Portfolios_Admin {
 		}
 	} // End init()
 
-	private function public_hooks() {
+	/**
+	 * Adds the admin hooks
+	 * @since 1.0.0
+	 */
+	protected function _admin() {
+		//Instantiating admin class
+		$this->admin = Pootle_PB_Portfolios_Admin::instance();
+
+		//Content block attributes apply
+		add_filter( 'pootlepb_welcome_message', array( $this->admin, 'welcome_message' ), 10, 3 );
+		//Enqueue admin JS and CSS
+		add_action( 'pootlepb_enqueue_admin_scripts', array( $this->admin, 'admin_enqueue' ) );
+		//Content block panel tab
+		add_filter( 'pootlepb_content_block_tabs', array( $this->admin, 'add_tab' ) );
+		//Content block panel fields
+		add_filter( 'pootlepb_content_block_fields', array( $this->admin, 'content_block_fields' ) );
+		//Row style panel tab
+		add_filter( 'pootlepb_row_settings_tabs', array( $this->admin, 'add_tab' ) );
+		//Row style panel fields
+		add_filter( 'pootlepb_row_settings_fields', array( $this->admin, 'row_tab_fields' ) );
+		//Row style panel js
+		add_action( 'pootlepb_row_settings_portfolio_tab', array( $this->admin, 'portfolio_row_js' ), 70 );
+		//Add portfolio dialog
+		add_action( 'pootlepb_metabox_end', array( $this->admin, 'add_pofo_dialogs' ) );
+		//Adding Button in add to panel pane
+		add_filter( 'pootlepb_add_to_panel_buttons', array( $this->admin, 'add_portfolio_button' ) );
+		//Add bg color message
+		add_action( 'pootlepb_content_block_portfolio_tab', array( $this->admin, 'portfolio_style_message' ), 70 );
+		//Custom pofo bg edit field
+		add_action( 'pootlepb_row_settings_custom_field_pofo-bg', array( $this->admin, 'portfolio_bg_edit_field_render' ), 7, 2 );
+	} // End admin_hooks()
+
+	private function _public() {
+		//Instantiating admin class
+		$this->public = Pootle_PB_Portfolios_Public::instance();
+
 		//Row attributes
-		add_filter( 'pootlepb_row_style_attributes', array( $this, 'row_attr' ), 10, 2 );
+		add_filter( 'pootlepb_row_style_attributes', array( $this->public, 'row_attr' ), 10, 2 );
+		//Content block attributes apply
+		add_filter( 'pootlepb_content_block_attributes', array( $this->public, 'content_block_attr' ), 10, 2 );
 		//Enqueue public JS and CSS
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_action( 'wp_enqueue_scripts', array( $this->public, 'enqueue' ) );
 		//Content Portfolio container
-		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container' ), 25 );
+		add_action( 'pootlepb_render_content_block', array( $this->public, 'portfolio_container' ), 25 );
 		//Content Portfolio container close
-		add_action( 'pootlepb_render_content_block', array( $this, 'portfolio_container_close' ), 70 );
-		//Content block attributes apply
-		add_filter( 'pootlepb_welcome_message', array( $this, 'welcome_message' ), 10, 3 );
-		//Content block attributes apply
-		add_filter( 'pootlepb_content_block_attributes', array( $this, 'content_block_attr' ), 10, 2 );
+		add_action( 'pootlepb_render_content_block', array( $this->public, 'portfolio_container_close' ), 70 );
 
 	} // End public_hooks()
 
 	/**
-	 * Sets row attributes
-	 *
-	 * @param array $attr Content block attributes
-	 * @param array $set Content block settings
-	 * @return array
+	 * Marks this add on as active on
+	 * @param array $active Active add ons
+	 * @return array Active add ons
+	 * @since 1.0.0
 	 */
-	public function row_attr( $attr, $set ) {
+	public function add_on_active( $active ) {
 
-		$this->block_now = 0;
-		$this->pofo_enabled = false;
-		$this->bg_images = false;
-		$this->row_animation = false;
-		$this->hover_color = false;
-		$this->hover_color_opacity = 0.5;
+		// To allows ppb add ons page to fetch name, description etc.
+		$active[ self::$token ] = self::$file;
 
-		if ( !empty( $set['portfolio-layout'] ) ) {
-			$attr['class'][] = 'ppb-portfolio portfolio-layout-' . $set['portfolio-layout'];
-			$this->pofo_enabled = true;
-		} else {
-			return $attr;
-		}
-
-		if ( !empty( $set['portfolio-edit-background'] ) ) {
-			$this->bg_images = json_decode( $set['portfolio-edit-background'], true );
-		}
-
-		if ( ! empty( $set['portfolio-animation'] ) ) {
-			$this->row_animation = $set['portfolio-animation'];
-		}
-
-		if ( !empty( $set['portfolio-hover-color'] ) ) {
-			$this->hover_color = $set['portfolio-hover-color'];
-			if ( ! empty( $set['portfolio-hover-color-opacity'] ) ) {
-				$this->hover_color_opacity = 1 - $set['portfolio-hover-color-opacity'];
-				$this->hover_color = 'rgba( ' . pootlepb_hex2rgb( $this->hover_color ) . ', ' . ( 1 - $set['portfolio-hover-color-opacity'] ) . ' )';
-			}
-		}
-
-		return $attr;
+		return $active;
 	}
-
-	public function welcome_message( $message, $current_user, $visit_count ) {
-		global $pagenow;
-		if ( 0 < $visit_count && 'post-new.php' == $pagenow && ! get_user_meta( $current_user->ID, 'pootlepb_pofo_welcome' ) ) {
-			update_user_meta( $current_user->ID, 'pootlepb_pofo_welcome', $visit_count );
-			return "
-<script>
-	jQuery(function($){
-		$('.add-button').removeClass('pootle');
-		$('.add-pofo.add-button').addClass('pootle');
-	})
-</script>
-<div id='ppb-hello-user' class='visit-count-1'>Click the 'Add Portfolio' button above to create your portfolio</div>
-			";
-		}
-		return $message;
-	}
-
-	/**
-	 * Sets content block attributes
-	 *
-	 * @param array $attr Content block attributes
-	 * @param array $set Content block settings
-	 * @return array
-	 */
-	public function content_block_attr( $attr, $set ) {
-		if ( !empty( $set['portfolio-bg'] ) ) {
-			$attr['style'] .= 'background: url(' . $set['portfolio-bg'] . ') center/cover;';
-		}
-		if ( !empty( $set['portfolio-item'] ) ) {
-			$attr['class'][] = 'ppb-portfolio-block';
-		}
-
-		$this->block_now++;
-
-		return $attr;
-	}
-
-	/**
-	 * Render the Content Panel.
-	 *
-	 * @param string $widget_info The widget class name.
-	 *
-	 * @since 0.1.0
-	 */
-	public function portfolio_container( $info ) {
-		$set = json_decode( $info['info']['style'], true );
-
-		if ( !empty( $set['portfolio-item'] ) ) {
-
-			$attr = array();
-			$attr['class'] = 'ppb-portfolio-item';
-			$attr['style'] = '';
-
-			$this->hover_color( $attr, $set );
-			$this->hover_animation( $attr, $set );
-			$this->add_link( $attr, $set );
-
-			echo '<div ' . pootlepb_stringify_attributes( $attr ) . '>';
-		}
-	}
-
-	private function hover_color( &$attr, $set ) {
-
-		if ( ! empty( $set['portfolio-bg-color'] ) ) {
-			$attr['style'] .= 'background:rgba( ' . pootlepb_hex2rgb( $set['portfolio-bg-color'] ) . ', ' . $this->hover_color_opacity . ' );';
-		} else if ( ! empty( $this->hover_color ) ) {
-			$attr['style'] .= ' background:' . $this->hover_color . ';';
-		}
-	}
-
-	private function hover_animation( &$attr, $set ) {
-
-		if ( ! empty( $this->row_animation ) ) {
-			$attr['data-portfolio-animate'] = 'animated ' . $this->row_animation;
-		}
-	}
-
-	private function add_link( &$attr, $set ) {
-
-		if ( ! empty( $set['portfolio-link'] ) ) {
-			$attr['style'] .= 'cursor:pointer;';
-			if ( 'link' == $set['portfolio-link'] ) {
-				echo '<a ';
-				if ( ! empty( $set['portfolio-link-new-page'] ) ) {
-					echo 'target="_blank" ';
-				}
-				echo 'href="' . $set['portfolio-link-url'] . '">';
-			} else {
-				add_thickbox();
-				echo '<a class="thickbox" href="' . $set['portfolio-bg'] . '?keepThis=true&TB_iframe=true&height=250&width=400">';
-			}
-		}
-	}
-
-	/**
-	 * Render the Content Panel.
-	 *
-	 * @param string $widget_info The widget class name.
-	 *
-	 * @since 0.1.0
-	 */
-	public function portfolio_container_close( $info ) {
-		$set = json_decode( $info['info']['style'], true );
-
-		if ( ! empty( $set['portfolio-item'] ) ) {
-			echo '</div>';
-			if ( ! empty( $set['portfolio-link'] ) ) {
-				echo '</a>';
-			}
-		}
-	}
-
-	/**
-	 * Enqueue the css and js to front end
-	 */
-	public function enqueue() {
-		$token = self::$token;
-		$url = self::$url;
-
-		wp_enqueue_style( $token . '-css', $url . '/assets/front-end.css' );
-		wp_enqueue_style( $token . '-animate', $url . '/assets/animate.css' );
-		wp_enqueue_script( $token . '-js', $url . '/assets/front-end.js', array( 'jquery' ) );
-	} // End enqueue()
 }
