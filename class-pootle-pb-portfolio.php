@@ -8,7 +8,7 @@
  * @static string $path Plugin root dir path
  * @static string $version Plugin version
  */
-class Pootle_PB_Portfolios extends Pootle_PB_Portfolios_Admin {
+class Pootle_PB_Portfolios {
 
 	/**
 	 * @var 	Pootle_PB_Portfolios Instance
