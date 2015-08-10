@@ -11,7 +11,7 @@
 class Pootle_PB_Portfolios_Admin {
 
 	/**
-	 * @var 	Pootle_Page_Builder_Addon_Boilerplate_Public Instance
+	 * @var 	Pootle_PB_Portfolios_Public Instance
 	 * @access  private
 	 * @since 	1.0.0
 	 */
@@ -21,7 +21,7 @@ class Pootle_PB_Portfolios_Admin {
 	 * Main Pootle Page Builder Addon Boilerplate Instance
 	 * Ensures only one instance of Storefront_Extension_Boilerplate is loaded or can be loaded.
 	 * @since 1.0.0
-	 * @return Pootle_Page_Builder_Addon_Boilerplate instance
+	 * @return Pootle_PB_Portfolios instance
 	 */
 	public static function instance() {
 		if ( null == self::$_instance ) {
@@ -36,10 +36,10 @@ class Pootle_PB_Portfolios_Admin {
 	 * @since   1.0.0
 	 */
 	private function __construct() {
-		$this->token   =   Pootle_Page_Builder_Addon_Boilerplate::$token;
-		$this->url     =   Pootle_Page_Builder_Addon_Boilerplate::$url;
-		$this->path    =   Pootle_Page_Builder_Addon_Boilerplate::$path;
-		$this->version =   Pootle_Page_Builder_Addon_Boilerplate::$version;
+		$this->token   =   Pootle_PB_Portfolios::$token;
+		$this->url     =   Pootle_PB_Portfolios::$url;
+		$this->path    =   Pootle_PB_Portfolios::$path;
+		$this->version =   Pootle_PB_Portfolios::$version;
 	} // End __construct()
 
 
