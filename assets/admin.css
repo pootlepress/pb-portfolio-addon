@@ -12,6 +12,12 @@
     background-size:0;
 }
 
+#panels-container .grid-container.pofo-bg-preview .controls .sort-bg {
+    display: inline-block;
+    opacity: 1;
+    color: #ef4832;
+}
+
 #pootlepb-panels .pofo-bg-preview .panels-container .panel {
     background-size:cover;
     background-position: center;

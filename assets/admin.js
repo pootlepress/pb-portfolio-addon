@@ -101,7 +101,7 @@ jQuery(function ($) {
 
     ppbPofo.sortContentPanelBg = function (e) {
         var $row = e.data.row;
-        $row.toggleClass('pofo-bg-preview')
+        $row.toggleClass('pofo-bg-preview');
         if ( $row.hasClass('pofo-bg-preview') ) {
             $row.find('.panel').each(function () {
                 var $t = $(this),

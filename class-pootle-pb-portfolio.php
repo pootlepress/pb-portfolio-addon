@@ -100,7 +100,6 @@ class Pootle_PB_Portfolios {
 	public function init() {
 		if ( class_exists( 'Pootle_Page_Builder' ) ) {
 
-
 			//Initiate admin
 			$this->_admin();
 
