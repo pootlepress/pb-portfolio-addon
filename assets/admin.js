@@ -61,45 +61,6 @@ jQuery(function ($) {
             }
         });
 
-    ppbPofo.editBgDialog = $('#pofo-edit-bgs-dialog');
-    ppbPofo.editBgDialog
-        .ppbDialog({
-            dialogClass: 'panels-admin-dialog',
-            autoOpen: false,
-            title: ppbPofo.editBgDialog.attr('data-title'),
-            open: function () {
-                ppbPofo.editBgDialog.ppbDialog( "option", "width", $(window).width() - 50 );
-                ppbPofo.editBgDialog.ppbDialog( "option", "height", $(window).height() - 50 );
-                var imgs = ppbPofo.imgSelected,
-                    imgWrap = $('#pofo-edit-bgs-dialog .images'),
-                    $row = $('#grid-styles-dialog').data('container');
-                imgWrap.attr( 'class', 'images num-cols-' + $row.find('.cell').length );
-
-                $.each( imgs, function( k, v ){
-                    imgWrap.append( '<img src="' + v + '">' );
-                });
-                imgWrap.sortable({
-                    items : 'img'
-                })
-            },
-            width: $(window).width() - 50,
-            height: $(window).height() - 50,
-            buttons: {
-                Done: function(){
-                    var images = [],
-                        imgWrap = $('#pofo-edit-bgs-dialog .images');
-                    imgWrap.children('img').each(function(i){
-                        images[i] = $(this).attr('src');
-                    });
-                    ppbPofo.editBgDialog.data('BGimgInput').val(JSON.stringify(images));
-                    imgWrap.html('');
-                    ppbPofo.imgSelected = images;
-                    ppbPofo.updateCBbgImg();
-                    ppbPofo.editBgDialog.ppbDialog('close')
-                }
-            }
-        });
-
     $('.add-pofo').click(function(e){
         e.preventDefault();
         ppbPofo.addPofoDialog.ppbDialog('open')
@@ -122,20 +83,43 @@ jQuery(function ($) {
 
     $html.on('pootlepb_admin_input_field_event_handlers', function ( e, $this ) {
         var $butts = $this.find('.pofo-select-image, .pofo-sort-image'),
-            $slImg = $this.find('.pofo-select-image'),
-            $srtImg = $this.find('.pofo-sort-image');
+            $slImg = $this.find('.pofo-select-image');
         $butts.off( 'click' );
         $slImg.click(ppbPofo.selectImg);
-        $srtImg.click(function(){
-            if ( ! $(this).siblings( 'input').val() ) {
-                $slImg.click();
-                return;
-            }
-            ppbPofo.editBgDialog.data('BGimgInput', $(this).siblings( 'input'))
-            ppbPofo.imgSelected = $.parseJSON( $(this).siblings( 'input').val() );
-            ppbPofo.editBgDialog.ppbDialog('open');
-        })
     });
+    //Row background button
+    $html.on('pootlepb_admin_setup_row_buttons', function ( e, $this ) {
+        $this.children('.controls')
+            .children('.add-col-button')
+            .before(
+                $('<div/>')
+                    .addClass('row-button sort-bg dashicons-before dashicons-welcome-view-site panels-visual-style')
+                    .attr('data-tooltip', 'Preview content block backgrounds')
+                    .click({row: $this}, ppbPofo.sortContentPanelBg)
+            );
+    });
+
+    ppbPofo.sortContentPanelBg = function (e) {
+        var $row = e.data.row;
+        $row.toggleClass('pofo-bg-preview')
+        if ( $row.hasClass('pofo-bg-preview') ) {
+            $row.find('.panel').each(function () {
+                var $t = $(this),
+                    styles = $.parseJSON($t.find('[name*="][info][style]"]').val());
+                if (styles['portfolio-bg']) {
+                    $t.css('background-image', 'url(' + styles['portfolio-bg'] + ')');
+                } else if (styles['background-color']) {
+                    $t.css('background-color', styles['background-color']);
+                }
+            });
+        } else {
+            $row.find('.panel').css({
+                'background-color': '',
+                'background-image': ''
+            });
+        }
+        $(window).resize();
+    };
 
     ppbPofo.selectImg = function (e) {
         e.preventDefault();

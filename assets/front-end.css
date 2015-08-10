@@ -41,3 +41,23 @@
 .ppb-block:hover .ppb-portfolio-item{
     opacity: 1;
 }
+
+div#TB_window img#TB_Image {
+    width: 100%;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+div#TB_caption, div#TB_closeWindow {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#TB_window .screen-reader-text {
+    display: block;
+}
+
+a#TB_ImageOff {
+    display: block;
+}

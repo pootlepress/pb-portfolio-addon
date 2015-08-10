@@ -103,10 +103,16 @@ class Pootle_PB_Portfolios_Admin {
 			'priority' => 1,
 			'tab' => 'portfolio',
 		);
+		$f['portfolio-bg-notice'] = array(
+			'name' => '<div class="field"><b>You can set a background color for this portfolio item in <a id="ppb-pofo-switch-to-style-tab" href="#">Style Section</a></b></div>',
+			'type' => 'html',
+			'priority' => 2,
+			'tab' => 'portfolio',
+		);
 		$f['portfolio-bg'] = array(
 			'name' => 'Background image',
 			'type' => 'upload',
-			'priority' => 2,
+			'priority' => 3,
 			'tab' => 'portfolio',
 		);
 		$f['portfolio-bg-color'] = array(
@@ -169,18 +175,11 @@ class Pootle_PB_Portfolios_Admin {
 			'type' => 'select',
 			'priority' => 2,
 			'options' => array(
-				'' => 'Please choose...',
-				'pulse' => 'Pulse',
+				'' => 'Fade In Down',
+				'fadeInUp' => 'Fade In Up',
 				'flipInX' => 'FlipInX',
-				'tada' => 'Tada',
-				'bounceOut' => 'Bounce Out',
-				'bounceOutLeft' => 'Bounce Out Left',
-				'bounceOutDown' => 'Bounce Out Down',
-				'fadeInDownBig' => 'Fade In Down Big',
-				'fadeInLeft' => 'Fade In Left',
-				'flip' => 'Flip',
-				'slideOutUp' => 'Slide Out Up',
-				'rotate' => 'Rotate',
+				'slideInUp' => 'Slide In Up',
+				'slideInDown' => 'Slide In Down',
 			),
 			'default' => '',
 		);
@@ -274,7 +273,6 @@ class Pootle_PB_Portfolios_Admin {
 	 */
 	public function portfolio_style_message() {
 		?>
-		You can set a background color for this portfolio item in <a id="ppb-pofo-switch-to-style-tab" href="#">Styles</a>
 		<script>
 			jQuery(function($){
 				$('#ppb-pofo-switch-to-style-tab').click(function(e){
@@ -293,7 +291,6 @@ class Pootle_PB_Portfolios_Admin {
 		         data-style-field="<?php echo esc_attr( $key ) ?>"
 		         data-style-field-type="<?php echo esc_attr( $field['type'] ) ?>" />
 		<button class="button pofo-select-image">Select Images</button>
-		<button class="button pofo-sort-image">Sort Images</button>
 		<?php
 	}
 }

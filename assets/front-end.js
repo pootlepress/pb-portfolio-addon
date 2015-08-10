@@ -19,14 +19,13 @@ jQuery(function ($) {
             $row.find('.ppb-portfolio-block').each(function () {
                 var $t = $(this),
                     wid = $t.width(),
-                    pofo = $t.find('.ppb-portfolio-item'),
-                    pofoHi = pofo.height();
+                    pofo = $t.find('.ppb-portfolio-item');
 
                 //Creating square elements
                 if ( $row.hasClass('portfolio-layout-square') || $row.hasClass('portfolio-layout-circle') ){
-                    pofo.css({
-                        padding: (wid - pofoHi - 2)/2 + 'px ' + (wid*0.16) + 'px'
-                    });
+                    pofo.css( 'padding', (wid*0.16) + 'px');
+                    var pofoHi = pofo.height();
+                    pofo.css( 'padding', (wid - pofoHi - 2)/2 + 'px ' + (wid*0.16) + 'px');
                 }
             });
 
@@ -38,11 +37,11 @@ jQuery(function ($) {
     $(window).resize(resize_pofo_items);
     $('.ppb-block').hover(
         function(){
-            var $t = $(this).find('.ppb-portfolio-item');
+            var $t = $(this).find('.portfolio-content');
             $t.addClass( $t.data( 'portfolio-animate' ) );
         },
         function(){
-            var $t = $(this).find('.ppb-portfolio-item');
+            var $t = $(this).find('.portfolio-content');
             $t.removeClass( $t.data( 'portfolio-animate' ) );
         }
     );

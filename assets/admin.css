@@ -4,6 +4,25 @@
  * @package Pootle_PB_Portfolios
  * @version 0.1.0
  */
+
+
+#pootlepb-panels .panels-container .panel {
+    background-color: #fafafa;
+    border: 1px solid #dadada;
+    background-size:0;
+}
+
+#pootlepb-panels .pofo-bg-preview .panels-container .panel {
+    background-size:cover;
+    background-position: center;
+    padding: 25px 0;
+}
+
+#pootlepb-panels .pofo-bg-preview .panels-container .panel-wrapper .title * {
+    text-indent: -9999px;
+    padding: 0;
+}
+
 #pofo-edit-bgs-dialog .images > img {
     max-width: 100%;
     display:block;

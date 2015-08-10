@@ -76,6 +76,8 @@ class Pootle_PB_Portfolios_Public{
 
 		if ( ! empty( $set['portfolio-animation'] ) ) {
 			$this->row_animation = $set['portfolio-animation'];
+		} else {
+			$this->row_animation = 'fadeInDown';
 		}
 
 		if ( !empty( $set['portfolio-hover-color'] ) ) {
@@ -126,10 +128,10 @@ class Pootle_PB_Portfolios_Public{
 			$attr['style'] = '';
 
 			$this->hover_color( $attr, $set );
-			$this->hover_animation( $attr, $set );
 			$this->add_link( $attr, $set );
 
 			echo '<div ' . pootlepb_stringify_attributes( $attr ) . '>';
+			echo "<div class='portfolio-content' data-portfolio-animate='animated {$this->row_animation}'>";
 		}
 	}
 
@@ -139,13 +141,6 @@ class Pootle_PB_Portfolios_Public{
 			$attr['style'] .= 'background:rgba( ' . pootlepb_hex2rgb( $set['portfolio-bg-color'] ) . ', ' . $this->hover_color_opacity . ' );';
 		} else if ( ! empty( $this->hover_color ) ) {
 			$attr['style'] .= ' background:' . $this->hover_color . ';';
-		}
-	}
-
-	private function hover_animation( &$attr, $set ) {
-
-		if ( ! empty( $this->row_animation ) ) {
-			$attr['data-portfolio-animate'] = 'animated ' . $this->row_animation;
 		}
 	}
 
@@ -177,6 +172,7 @@ class Pootle_PB_Portfolios_Public{
 		$set = json_decode( $info['info']['style'], true );
 
 		if ( ! empty( $set['portfolio-item'] ) ) {
+			echo '</div>';
 			echo '</div>';
 			if ( ! empty( $set['portfolio-link'] ) ) {
 				echo '</a>';
