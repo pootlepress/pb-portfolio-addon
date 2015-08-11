@@ -103,21 +103,21 @@ class Pootle_PB_Portfolios_Admin {
 			'priority' => 1,
 			'tab' => 'portfolio',
 		);
-		$f['portfolio-bg-notice'] = array(
-			'name' => '<div class="field"><b>You can set a background color for this portfolio item in <a id="ppb-pofo-switch-to-style-tab" href="#">Style Section</a></b></div>',
-			'type' => 'html',
-			'priority' => 2,
-			'tab' => 'portfolio',
-		);
 		$f['portfolio-bg'] = array(
 			'name' => 'Background image',
 			'type' => 'upload',
-			'priority' => 3,
+			'priority' => 2,
 			'tab' => 'portfolio',
 		);
 		$f['portfolio-bg-color'] = array(
 			'name' => 'Hover color',
 			'type' => 'color',
+			'priority' => 3,
+			'tab' => 'portfolio',
+		);
+		$f['portfolio-bg-notice'] = array(
+			'name' => '<div class="field"><b>You can set a background color for this portfolio item in <a id="ppb-pofo-switch-to-style-tab" href="#">Style Section</a></b></div>',
+			'type' => 'html',
 			'priority' => 4,
 			'tab' => 'portfolio',
 		);
@@ -183,23 +183,23 @@ class Pootle_PB_Portfolios_Admin {
 			),
 			'default' => '',
 		);
+		$f['portfolio-edit-background'] = array(
+			'name' => 'Background Images',
+			'type' => 'pofo-bg',
+			'priority' => 3,
+			'tab' => 'portfolio',
+		);
 		$f['portfolio-hover-color'] = array(
 			'name' => 'Hover color',
 			'type' => 'color',
-			'priority' => 3,
+			'priority' => 4,
 			'tab' => 'portfolio',
 		);
 		$f['portfolio-hover-color-opacity'] = array(
 			'name' => 'Hover color Transparency',
 			'default' => '0.5',
 			'type' => 'slider',
-			'priority' => 4,
-			'tab' => 'portfolio',
-		);
-		$f['portfolio-edit-background'] = array(
-			'name' => 'Edit Background',
-			'type' => 'pofo-bg',
-			'priority' => 3,
+			'priority' => 5,
 			'tab' => 'portfolio',
 		);
 		return $f;
@@ -246,11 +246,6 @@ class Pootle_PB_Portfolios_Admin {
 				<input id="pofo-add-dialog-num-cols" type="number" class="small-text" value="4"> x
 				<input id="pofo-add-dialog-num-rows" type="number" class="small-text" value="4">
 			</p>
-		</div>
-		<div id="pofo-edit-bgs-dialog" data-title="<?php esc_attr_e( 'Sort Images', 'ppb-panels' ) ?>"
-		     class="panels-admin-dialog" style="text-align: center">
-			<p>Drag the images below to reorder them for your portfolio</p>
-			<div class="images"></div>
 		</div>
 	<?php
 	}
