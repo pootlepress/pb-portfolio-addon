@@ -89,7 +89,7 @@ class Pootle_PB_Portfolios {
 	 */
 	private function __construct( $file ) {
 		self::$token =     'pootle-pb-portfolio';
-		self::$file    =   plugin_dir_path( $file );
+		self::$file    =   $file;
 		self::$url     =   plugin_dir_url( $file );
 		self::$path    =   plugin_dir_path( $file );
 		self::$version =   '1.0.0';

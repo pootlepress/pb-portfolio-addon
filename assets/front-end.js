@@ -12,8 +12,6 @@ jQuery(function ($) {
             var $row = $(this),
                 gutter = parseFloat( $row.find('.ppb-col').eq(0).css('padding-right') );
 
-            console.log(gutter);
-
             $row.find('.ppb-block').not(':last-child').css('margin-bottom', gutter*2);
 
             $row.find('.ppb-portfolio-block').each(function () {
