@@ -97,49 +97,23 @@ class Pootle_PB_Portfolios_Admin {
 	 * @return array Tabs
 	 */
 	public function content_block_fields( $f ) {
-		$f['portfolio-item'] = array(
-			'name' => 'Make this a porfolio item',
-			'type' => 'checkbox',
+		$f['portfolio-grid'] = array(
+			'name' => 'Display',
+			'type' => 'pofo-display',
 			'priority' => 1,
 			'tab' => 'portfolio',
 		);
-		$f['portfolio-bg'] = array(
-			'name' => 'Background image',
-			'type' => 'upload',
+		$f['portfolio-grid-preview'] = array(
+			'name' => '<div class="pofo-grid-preview"></div>',
+			'type' => 'html',
 			'priority' => 2,
 			'tab' => 'portfolio',
 		);
-		$f['portfolio-bg-color'] = array(
-			'name' => 'Hover color',
-			'type' => 'color',
-			'priority' => 4,
+		$f['portfolio-grid-options'] = array(
+			'name' => '<div class="pofo-grid-options"></div>',
+			'type' => 'html',
+			'priority' => 2,
 			'tab' => 'portfolio',
-		);
-		$f['portfolio-link'] = array(
-			'name' => __( 'Link to', 'vantage' ),
-			'tab' => 'portfolio',
-			'type' => 'select',
-			'priority' => 5,
-			'options' => array(
-				'' => 'None',
-				'link' => 'Webpage',
-				'libox' => 'Lightbox',
-			),
-			'default' => '',
-		);
-		$f['portfolio-link-url'] = array(
-			'name' => __( 'Webpage URL', 'vantage' ),
-			'tab' => 'portfolio',
-			'type' => 'text',
-			'priority' => 6,
-			'default' => '',
-		);
-		$f['portfolio-link-new-page'] = array(
-			'name' => __( 'Open in a new page', 'vantage' ),
-			'tab' => 'portfolio',
-			'type' => 'checkbox',
-			'priority' => 7,
-			'default' => '',
 		);
 		return $f;
 	}
@@ -295,5 +269,16 @@ class Pootle_PB_Portfolios_Admin {
 		<button class="button pofo-select-image">Select Images</button>
 		<button class="button pofo-sort-image">Sort Images</button>
 		<?php
+	}
+
+	public function pofo_display_field( $key, $field ) {
+		$field['type'] = 'number';
+		$field['min'] = '0';
+		$field['max'] = '10';
+		pootlepb_render_content_field( $key . '-across', $field );
+		echo ' across by ';
+		unset( $field['max'] );
+		pootlepb_render_content_field( $key . '-down', $field );
+		echo ' down';
 	}
 }

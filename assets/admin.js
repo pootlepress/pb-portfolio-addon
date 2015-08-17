@@ -135,7 +135,137 @@ jQuery(function ($) {
             ppbPofo.imgSelected = $.parseJSON( $(this).siblings( 'input').val() );
             ppbPofo.editBgDialog.ppbDialog('open');
         })
+
+        //Content blocks grid
+        var $gPrev = $this.find('.pofo-grid-preview');
+        var $gOpt = $this.find('.pofo-grid-options');
+        $this.find('.content-block-portfolio-grid-across, .content-block-portfolio-grid-down').off( 'change' ).on( 'change', function () {
+            var across = $this.find('.content-block-portfolio-grid-across').val(),
+                down = $this.find('.content-block-portfolio-grid-down').val();
+            //If both across and down values are numbers
+            if ( ! isNaN(across) && ! isNaN(down) ) {
+                //Clearing previous preview grid
+                $gPrev.html('');
+                $gOpt.html('');
+                //Create grid preview
+                for ( var ro = 0; ro < down; ro++ ) {
+                    var $row = $('<div/>');
+                    $row.addClass('pofo-grid-row');
+                    for ( var c = 0; c < across; c++ ) {
+                        var pofoItemRef = 'item-' + ro + '-' + c;
+
+                        //Add pofo item to grid preview
+                        $row.append(
+                            $('<div/>')
+                                .addClass('pofo-grid-item ' + pofoItemRef)
+                                .data('ref', pofoItemRef)
+                                .data('row', ro)
+                                .data('col', c)
+                                .css( 'width', ((101-across)/across) + '%' )
+                        );
+
+                        //Add pofo item options
+                        $gOpt.append(
+                            $('<div/>')
+                            .addClass('pofo-item-options options-' + pofoItemRef)
+                            .append(
+                                $('<div/>')
+                                .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
+                                .append(
+                                    $('<label/>')
+                                    .html('Background Color')
+                                )
+                                .append(
+                                    $('<span/>')
+                                    .append(
+                                        $('<input/>')
+                                        .data('ref', pofoItemRef)
+                                        .attr('dialog-field', 'portfolio-' + pofoItemRef + '-color')
+                                        .attr('data-style-field-type', 'color')
+                                        .addClass('content-block-options-' + ro + '-' + c + '-color')
+                                    )
+                                )
+                            )
+                            .append(
+                                $('<div/>')
+                                .addClass('field field-portfolio-' + pofoItemRef + '-image field_type-upload')
+                                .append(
+                                    $('<label/>')
+                                        .html('Background Image')
+                                )
+                                .append(
+                                    $('<span/>')
+                                    .append(
+                                        $('<input/>')
+                                            .data('ref', pofoItemRef)
+                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-upload')
+                                            .attr('data-style-field-type', 'upload')
+                                            .addClass('content-block-options-' + ro + '-' + c + '-image')
+                                    )
+                                    .append(
+                                        $('<button/>')
+                                            .addClass('button upload-button')
+                                            .html('Select Image')
+                                    )
+                                )
+                            )
+                        )
+                    }
+                    $gPrev.append($row);
+                }
+                ppbPofo.previewGridEvents( $gPrev, $gOpt );
+                panels.addInputFieldEventHandlers($gOpt);
+                panels.pootlePageGetWidgetStyles($gOpt);
+            }
+        });
     });
+
+    /**
+     * Sets preview grid events
+     * @param $grid pofo-grid-preview element jquery
+     */
+    ppbPofo.previewGridEvents = function ( $grid, $gOpt ) {
+        console.log($gOpt.find('.field_type-color input'));
+
+        //Color field
+        $gOpt.find('.field_type-color input').change(function(){
+            var $t = $(this),
+                itemRef = $t.data('ref');
+            $grid.find('.pofo-grid-item.' + itemRef).css( 'background-color', $t.val() );
+        });
+
+        //Image field
+        $gOpt.find('.field_type-upload input').change(function(){
+            var $t = $(this),
+                itemRef = $t.data('ref');
+            $grid.find('.pofo-grid-item.' + itemRef).css( 'background-image', 'url(' + $t.val() + ')' );
+        });
+
+        //Preview grid items
+        $grid.find('.pofo-grid-item').click(function(){
+            var $t = $(this),
+                itemRef = $t.data('ref'),
+                $settings = $( '.pofo-item-options.options-' + itemRef);
+
+            $('.pofo-grid-item').removeClass('active');
+
+            //If already visible
+            if ( $settings.hasClass('active') ) {
+                //hide settings and return
+                $settings.removeClass('active').hide();
+                return;
+            }
+
+            //Make this active and get it's settings
+            $t.addClass('active');
+            $( '.pofo-item-options' ).removeClass('active').hide();
+            $settings
+                .show()
+                .addClass('active')
+                .css('top', 0)
+                .css('top', Math.floor( -$settings.offset().top + $t.offset().top + 97 ) + 'px');
+        })
+    };
 
     ppbPofo.selectImg = function (e) {
         e.preventDefault();

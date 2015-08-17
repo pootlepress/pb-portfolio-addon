@@ -125,6 +125,8 @@ class Pootle_PB_Portfolios {
 		//Instantiating admin class
 		$this->admin = Pootle_PB_Portfolios_Admin::instance();
 
+		//Pofo grid fields
+		add_action( 'pootlepb_content_block_custom_field_pofo-display', array( $this->admin, 'pofo_display_field' ), 10, 2 );
 		//Content block attributes apply
 		add_filter( 'pootlepb_welcome_message', array( $this->admin, 'welcome_message' ), 10, 3 );
 		//Enqueue admin JS and CSS
