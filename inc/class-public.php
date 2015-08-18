@@ -112,12 +112,47 @@ class Pootle_PB_Portfolios_Public{
 	/**
 	 * Render the Content Panel.
 	 *
-	 * @param string $widget_info The widget class name.
+	 * @param array $info content block info
 	 *
 	 * @since 0.1.0
 	 */
-	public function portfolio_container( $info ) {
+	public function portfolio( $info ) {
 		$set = json_decode( $info['info']['style'], true );
+
+		if ( ! empty( $set['portfolio-grid-across'] ) && ! empty( $set['portfolio-grid-down'] ) ) {
+			$across = $set['portfolio-grid-across'];
+			$down   = $set['portfolio-grid-down'];
+			for ( $ro = 0; $ro < $down; $ro ++ ) {
+				?>
+				<div class="pofo-row">
+					<?php
+					for ( $c = 0; $c < $across; $c ++ ) {
+						?>
+						<div
+							class="pofo-item"
+							style="<?php
+							?>width: <?php echo ( 101 - $across ) / $across ?>%;<?php
+							?>padding-top: <?php echo ( 101 - $across ) / $across ?>%;<?php
+							?>background-color: <?php echo $set[ 'portfolio-item-' . $ro . '-' . $c . '-color' ] ?>;<?php
+							?>background-image: url(<?php echo $set[ 'portfolio-item-' . $ro . '-' . $c . '-upload' ] ?>);<?php
+							?>">
+							<div class="pofo-contents"
+							     style="<?php
+							     ?>background-color: <?php echo $set[ 'portfolio-item-' . $ro . '-' . $c . '-color' ] ?>;<?php
+							     ?>">
+
+							<div class="hv-center">
+
+								</div>
+							</div>
+						</div>
+					<?php
+					}
+					?>
+				</div>
+			<?php
+			}
+		}
 
 		if ( !empty( $set['portfolio-item'] ) ) {
 

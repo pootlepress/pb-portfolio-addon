@@ -152,7 +152,8 @@ jQuery(function ($) {
                     var $row = $('<div/>');
                     $row.addClass('pofo-grid-row');
                     for ( var c = 0; c < across; c++ ) {
-                        var pofoItemRef = 'item-' + ro + '-' + c;
+                        var item = ro + '-' + c,
+                            pofoItemRef = 'item-' + item;
 
                         //Add pofo item to grid preview
                         $row.append(
@@ -161,28 +162,31 @@ jQuery(function ($) {
                                 .data('ref', pofoItemRef)
                                 .data('row', ro)
                                 .data('col', c)
-                                .css( 'width', ((101-across)/across) + '%' )
+                                .css({
+                                    width : ((101-across)/across) + '%',
+                                    paddingTop : ((101-across)/across) + '%'
+                                })
                         );
 
                         //Add pofo item options
                         $gOpt.append(
                             $('<div/>')
                             .addClass('pofo-item-options options-' + pofoItemRef)
-                            .append(
+                                .append(
                                 $('<div/>')
-                                .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
-                                .append(
-                                    $('<label/>')
-                                    .html('Background Color')
-                                )
-                                .append(
-                                    $('<span/>')
+                                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
                                     .append(
+                                    $('<label/>')
+                                        .html('Background Color')
+                                )
+                                    .append(
+                                    $('<span/>')
+                                        .append(
                                         $('<input/>')
-                                        .data('ref', pofoItemRef)
-                                        .attr('dialog-field', 'portfolio-' + pofoItemRef + '-color')
-                                        .attr('data-style-field-type', 'color')
-                                        .addClass('content-block-options-' + ro + '-' + c + '-color')
+                                            .data('ref', pofoItemRef)
+                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-color')
+                                            .attr('data-style-field-type', 'color')
+                                            .addClass('content-block-options-' + item + '-color')
                                     )
                                 )
                             )
@@ -198,14 +202,31 @@ jQuery(function ($) {
                                     .append(
                                         $('<input/>')
                                             .data('ref', pofoItemRef)
-                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-upload')
+                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-image')
                                             .attr('data-style-field-type', 'upload')
-                                            .addClass('content-block-options-' + ro + '-' + c + '-image')
+                                            .addClass('content-block-options-' + item + '-image')
                                     )
                                     .append(
                                         $('<button/>')
                                             .addClass('button upload-button')
                                             .html('Select Image')
+                                    )
+                                )
+                            )
+                            .append(
+                                $('<div/>')
+                                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
+                                    .append(
+                                    $('<label/>')
+                                        .html('Hover Color')
+                                )
+                                    .append(
+                                    $('<span/>')
+                                        .append(
+                                        $('<input/>')
+                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-hover-color')
+                                            .attr('data-style-field-type', 'color')
+                                            .addClass('content-block-options-' + item + '-hover-color')
                                     )
                                 )
                             )

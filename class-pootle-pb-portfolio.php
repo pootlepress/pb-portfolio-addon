@@ -161,10 +161,8 @@ class Pootle_PB_Portfolios {
 		add_filter( 'pootlepb_content_block_attributes', array( $this->public, 'content_block_attr' ), 10, 2 );
 		//Enqueue public JS and CSS
 		add_action( 'wp_enqueue_scripts', array( $this->public, 'enqueue' ) );
-		//Content Portfolio container
-		add_action( 'pootlepb_render_content_block', array( $this->public, 'portfolio_container' ), 25 );
 		//Content Portfolio container close
-		add_action( 'pootlepb_render_content_block', array( $this->public, 'portfolio_container_close' ), 70 );
+		add_action( 'pootlepb_render_content_block', array( $this->public, 'portfolio' ), 70 );
 
 	} // End public_hooks()
 
