@@ -136,22 +136,22 @@ class Pootle_PB_Portfolios_Admin {
 			'priority' => 3,
 			'tab' => 'portfolio',
 		);
-		$f['portfolio-edit-background'] = array(
-			'name' => 'Edit Background',
-			'type' => 'pofo-bg',
-			'priority' => 4,
-			'tab' => 'portfolio',
-		);
 		$f['portfolio-hover-color-opacity'] = array(
 			'name' => 'Hover color Transparency',
 			'default' => '0.5',
 			'type' => 'slider',
-			'priority' => 5,
+			'priority' => 4,
 			'tab' => 'portfolio',
 		);
 		$f['portfolio-grid'] = array(
 			'name' => 'Display',
 			'type' => 'pofo-display',
+			'priority' => 5,
+			'tab' => 'portfolio',
+		);
+		$f['portfolio-edit-background'] = array(
+			'name' => 'Edit Background',
+			'type' => 'pofo-bg',
 			'priority' => 6,
 			'tab' => 'portfolio',
 		);

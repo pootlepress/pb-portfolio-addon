@@ -25,50 +25,6 @@ jQuery(function ($) {
             }
         }
     });
-    ppbPofo.addPofoDialog = $('#pofo-add-dialog');
-    ppbPofo.addPofoDialog
-        .ppbDialog({
-            dialogClass: 'panels-admin-dialog',
-            autoOpen: false,
-            title: ppbPofo.addPofoDialog.attr('data-title'),
-            open: function () {
-                $('#pofo-add-dialog-num-cols').val(4);
-                $('#pofo-add-dialog-num-rows').val(4);
-            },
-            width: 430,
-            buttons: {
-                Add: function () {
-                    var grid = [
-                        $('#pofo-add-dialog-num-cols').val(),
-                        $('#pofo-add-dialog-num-rows').val()
-                    ];
-
-                    var $gridContainer = window.panels.createGrid(grid[0], null, {
-                        'portfolio-hover-color': '#cccccc',
-                        'portfolio-hover-color-opacity': '0.5',
-                        'portfolio-layout': 'square'
-                    });
-                    panels.ppbGridEvents($gridContainer);
-
-                    for (var x = 0; x < grid[0]; x++) {
-                        panels.removePaddingAnimated($(this).closest('.grid-container'));
-
-                        for (var y = 0; y < grid[1]; y++) {
-                            var $t = $gridContainer.find('.cell').eq(x);
-                            add_pofo_block($t);
-                        }
-                    }
-                    $gridContainer.hide();
-                    $gridContainer.slideDown();
-                    $('#pofo-add-dialog').ppbDialog('close')
-                }
-            }
-        });
-
-    $('.add-pofo').click(function (e) {
-        e.preventDefault();
-        ppbPofo.addPofoDialog.ppbDialog('open')
-    });
 
     add_pofo_block = function ($t) {
         $('.cell').removeClass('cell-selected');
@@ -85,8 +41,8 @@ jQuery(function ($) {
         panels.addPanel(panel, null, null, false);
     };
 
+    //Switch to pofo tab
     $html.on('pootlepb_admin_editor_panel_done', function (e, $this) {
-
         if (
             $this.find('.content-block-portfolio-grid-across').val() &&
             $this.find('.content-block-portfolio-grid-down').val()
@@ -96,7 +52,7 @@ jQuery(function ($) {
     });
 
     $html.on('pootlepb_admin_input_field_event_handlers', function (e, $this) {
-
+        $this.find('.field-portfolio-edit-background').hide();
             var $butts = $this.find('.pofo-select-image, .pofo-sort-image'),
             $slImg = $this.find('.pofo-select-image'),
             $srtImg = $this.find('.pofo-sort-image');
@@ -107,15 +63,17 @@ jQuery(function ($) {
         var $gPrev = $this.find('.pofo-grid-preview');
         var $gOpt = $this.find('.pofo-grid-options');
         $this.find('.content-block-portfolio-grid-across, .content-block-portfolio-grid-down').off('change').on('change', function () {
+            $('.field-portfolio-edit-background').hide();
             var across = $this.find('.content-block-portfolio-grid-across').val(),
                 down = $this.find('.content-block-portfolio-grid-down').val(),
                 item = 0;
+            $gPrev.html('');
+            $gOpt.html('');
             //If both across and down values are numbers
-            if (!isNaN(across) && !isNaN(down)) {
+            if (!isNaN(across) && !isNaN(down) && across * down > 0 ) {
+                $('.field-portfolio-edit-background').show();
                 //Clearing previous preview grid
-                $gPrev.html('');
                 $gOpt
-                    .html('')
                     .data('cols', across)
                     .data('rows', down);
                 //Create grid preview
@@ -229,17 +187,19 @@ jQuery(function ($) {
                 panels.pootlePageGetWidgetStyles($gOpt);
                 $gPrev.sortable({
                     items: '.pofo-grid-item',
-                    sort: function ( e, ui ) {
+                    update: function ( e, ui ) {
                         $('.pofo-grid-item').each(function ( i ) {
                             var $t = $(this),
                                 newRef = 'item-' + i,
                                 classes = 'pofo-grid-item ' + newRef,
-                                oldRef = $t.data('ref', pofoItemRef);
-                            $t
-                                .attr('class', classes)
+                                oldRef = $t.data('ref');
+                            $t  .addClass(newRef)
+                                .removeClass(oldRef)
                                 .data('ref', newRef);
-                            ppbPofo.updateSettingsIndex( newRef, oldRef );
+                            ppbPofo.updateSettingsIndex( oldRef, newRef );
                         });
+                        ppbPofo.previewGridEvents($(), $('.pofo-item-options.new'));
+                        $('.pofo-item-options.new').removeClass('new').find('input').change();
                     }
                 });
             }
@@ -247,14 +207,20 @@ jQuery(function ($) {
     });
 
     ppbPofo.updateSettingsIndex = function( ol, nu ) {
-        var $sets = $('.pofo-item-options.options-' + ol).attr('class', 'pofo-item-options options-' + nu);
-
+        if(nu == ol) {
+            return;
+        }
+        var $sets = $('.pofo-item-options.options-' + ol).not('.new');
+        $sets
+            .removeClass('options-' + ol)
+            .addClass('options-' + nu + ' new');
         $.each(['-content', '-hover-color', '-color', '-image'], function(k, v){
-            $sets.find('.content-block-options-' + ol + k)
-                .attr('dialog-field', 'portfolio-' + nu + k)
-                .addClass('.content-block-options-' + nu + k)
-                .removeClass('.content-block-options-' + ol + k)
-                .change();
+            var $field = $sets.find('.content-block-options-' + ol + v);
+            $field
+               .attr('dialog-field', 'portfolio-' + nu + v)
+               .addClass('content-block-options-' + nu + v)
+               .removeClass('content-block-options-' + ol + v)
+               .data('ref', nu);
         })
     };
 
@@ -264,14 +230,14 @@ jQuery(function ($) {
      */
     ppbPofo.previewGridEvents = function ($grid, $gOpt) {
         //Color field
-        $gOpt.find('.field_type-color input').change(function () {
+        $gOpt.find('.field_type-color input').off( 'change').on( 'change', function () {
             var $t = $(this),
                 itemRef = $t.data('ref');
             $grid.find('.pofo-grid-item.' + itemRef).css('background-color', $t.val());
         });
 
         //Image field
-        $gOpt.find('.field_type-upload input').change(function () {
+        $gOpt.find('.field_type-upload input').off( 'change').on( 'change', function () {
             var $t = $(this),
                 itemRef = $t.data('ref');
             $grid.find('.pofo-grid-item.' + itemRef).css('background-image', 'url(' + $t.val() + ')');
@@ -348,21 +314,12 @@ jQuery(function ($) {
             num = ppbPofo.imgSelected.length,
             i = 0;
 
-        debug = [];
-
         $imgFields.each(function (k) {
             var $t = $(this);
             if ( ! $t.val().length && i < num ) {
                 $t.val( ppbPofo.imgSelected[i] ).change();
-                console.log( {
-                    index : i,
-                    img : ppbPofo.imgSelected[i],
-                    val : $t.val(),
-                    num : num
-                } );
                 i++;
             }
         });
-        console.log(debug);
     };
 });
