@@ -135,20 +135,12 @@ class Pootle_PB_Portfolios {
 		add_filter( 'pootlepb_content_block_tabs', array( $this->admin, 'add_tab' ) );
 		//Content block panel fields
 		add_filter( 'pootlepb_content_block_fields', array( $this->admin, 'content_block_fields' ) );
-		//Row style panel tab
-		add_filter( 'pootlepb_row_settings_tabs', array( $this->admin, 'add_tab' ) );
-		//Row style panel fields
-		add_filter( 'pootlepb_row_settings_fields', array( $this->admin, 'row_tab_fields' ) );
 		//Row style panel js
 		add_action( 'pootlepb_row_settings_portfolio_tab', array( $this->admin, 'portfolio_row_js' ), 70 );
-		//Add portfolio dialog
-		add_action( 'pootlepb_metabox_end', array( $this->admin, 'add_pofo_dialogs' ) );
-		//Adding Button in add to panel pane
-		add_filter( 'pootlepb_add_to_panel_buttons', array( $this->admin, 'add_portfolio_button' ) );
 		//Add bg color message
 		add_action( 'pootlepb_content_block_portfolio_tab', array( $this->admin, 'portfolio_style_message' ), 70 );
 		//Custom pofo bg edit field
-		add_action( 'pootlepb_row_settings_custom_field_pofo-bg', array( $this->admin, 'portfolio_bg_edit_field_render' ), 7, 2 );
+		add_action( 'pootlepb_content_block_custom_field_pofo-bg', array( $this->admin, 'portfolio_bg_edit_field_render' ), 7, 2 );
 	} // End admin_hooks()
 
 	private function _public() {

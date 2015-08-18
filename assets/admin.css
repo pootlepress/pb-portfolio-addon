@@ -88,7 +88,7 @@
     margin-right: 0%;
 }
 
-.pofo-grid-row:after {
+.pofo-grid-preview:after {
     display: block;
     content: '';
     clear: both;
@@ -97,7 +97,7 @@
 .pofo-item-options {
     display: none;
     position: relative;
-    background-color: rgba(255,255,255,0.88);
+    background-color: #fff;
     padding: 16px 1px 1px;
 }
 
@@ -109,4 +109,9 @@
 .pofo-grid-preview {
     margin-left: 230px;
     margin-right: 120px;
+    position: relative;
+}
+
+.pofo-grid-options {
+    height: 0;
 }

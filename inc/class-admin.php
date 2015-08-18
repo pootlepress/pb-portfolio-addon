@@ -71,11 +71,10 @@ class Pootle_PB_Portfolios_Admin {
 	 * Enqueue the css and js to front end
 	 */
 	public function admin_enqueue() {
-		$token = Pootle_PB_Portfolios::$token;
-		$url = Pootle_PB_Portfolios::$url;
+		$token = $this->token;
 
-		wp_enqueue_script( $token . '-admin-js', $url . '/assets/admin.js', array( 'jquery' ) );
-		wp_enqueue_style( $token . '-admin-css', $url . '/assets/admin.css' );
+		wp_enqueue_script( $token . '-admin-js', $this->url . '/assets/admin.js', array( 'jquery', 'jquery-ui-sortable' ) );
+		wp_enqueue_style( $token . '-admin-css', $this->url . '/assets/admin.css' );
 	}
 
 	/**
@@ -97,33 +96,6 @@ class Pootle_PB_Portfolios_Admin {
 	 * @return array Tabs
 	 */
 	public function content_block_fields( $f ) {
-		$f['portfolio-grid'] = array(
-			'name' => 'Display',
-			'type' => 'pofo-display',
-			'priority' => 1,
-			'tab' => 'portfolio',
-		);
-		$f['portfolio-grid-preview'] = array(
-			'name' => '<div class="pofo-grid-preview"></div>',
-			'type' => 'html',
-			'priority' => 2,
-			'tab' => 'portfolio',
-		);
-		$f['portfolio-grid-options'] = array(
-			'name' => '<div class="pofo-grid-options"></div>',
-			'type' => 'html',
-			'priority' => 2,
-			'tab' => 'portfolio',
-		);
-		return $f;
-	}
-
-	/**
-	 * Adds portfolio row fields
-	 * @param array $f Fields
-	 * @return array Tabs
-	 */
-	public function row_tab_fields( $f ) {
 		$f['portfolio-layout'] = array(
 			'name' => __( 'Portfolio layout', 'vantage' ),
 			'tab' => 'portfolio',
@@ -164,17 +136,35 @@ class Pootle_PB_Portfolios_Admin {
 			'priority' => 3,
 			'tab' => 'portfolio',
 		);
+		$f['portfolio-edit-background'] = array(
+			'name' => 'Edit Background',
+			'type' => 'pofo-bg',
+			'priority' => 4,
+			'tab' => 'portfolio',
+		);
 		$f['portfolio-hover-color-opacity'] = array(
 			'name' => 'Hover color Transparency',
 			'default' => '0.5',
 			'type' => 'slider',
-			'priority' => 4,
+			'priority' => 5,
 			'tab' => 'portfolio',
 		);
-		$f['portfolio-edit-background'] = array(
-			'name' => 'Edit Background',
-			'type' => 'pofo-bg',
-			'priority' => 3,
+		$f['portfolio-grid'] = array(
+			'name' => 'Display',
+			'type' => 'pofo-display',
+			'priority' => 6,
+			'tab' => 'portfolio',
+		);
+		$f['portfolio-grid-preview'] = array(
+			'name' => '<div class="pofo-grid-preview"></div>',
+			'type' => 'html',
+			'priority' => 7,
+			'tab' => 'portfolio',
+		);
+		$f['portfolio-grid-options'] = array(
+			'name' => '<div class="pofo-grid-options"></div>',
+			'type' => 'html',
+			'priority' => 8,
 			'tab' => 'portfolio',
 		);
 		return $f;
@@ -203,52 +193,11 @@ class Pootle_PB_Portfolios_Admin {
 	}
 
 	/**
-	 * Adds Portfolio dialogs
-	 * @action pootlepb_metabox_end
-	 */
-	public function add_pofo_dialogs() {
-		?>
-		<div id="pofo-add-dialog" data-title="<?php esc_attr_e( 'Add Portfolio', 'ppb-panels' ) ?>"
-		     class="panels-admin-dialog" style="text-align: center">
-			<p>
-				<label>
-					<strong>
-						<?php _e( 'Type in the number of rows and columns', 'ppb-panels' ) ?>
-					</strong>
-				</label>
-			</p>
-			<p>
-				<input id="pofo-add-dialog-num-cols" type="number" class="small-text" value="4"> x
-				<input id="pofo-add-dialog-num-rows" type="number" class="small-text" value="4">
-			</p>
-		</div>
-		<div id="pofo-edit-bgs-dialog" data-title="<?php esc_attr_e( 'Sort Images', 'ppb-panels' ) ?>"
-		     class="panels-admin-dialog" style="text-align: center">
-			<p>Drag the images below to reorder them for your portfolio</p>
-			<div class="images"></div>
-		</div>
-	<?php
-	}
-
-	/**
-	 * Adds Add Portfolio dialog
-	 * @action pootlepb_add_to_panel_buttons
-	 */
-	public function add_portfolio_button( $buttons ) {
-		$preb_name = $buttons['prebuilt-set'];
-		unset( $buttons['prebuilt-set'] );
-		$buttons['add-pofo'] = 'Add Portfolio';
-		$buttons['prebuilt-set'] = $preb_name;
-		return $buttons;
-	}
-
-	/**
 	 * Add portfolio js to row styling panel
 	 * @since 0.1.0
 	 */
 	public function portfolio_style_message() {
 		?>
-		You can set a background color for this portfolio item in <a id="ppb-pofo-switch-to-style-tab" href="#">Styles</a>
 		<script>
 			jQuery(function($){
 				$('#ppb-pofo-switch-to-style-tab').click(function(e){
@@ -267,7 +216,6 @@ class Pootle_PB_Portfolios_Admin {
 		         data-style-field="<?php echo esc_attr( $key ) ?>"
 		         data-style-field-type="<?php echo esc_attr( $field['type'] ) ?>" />
 		<button class="button pofo-select-image">Select Images</button>
-		<button class="button pofo-sort-image">Sort Images</button>
 		<?php
 	}
 
