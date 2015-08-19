@@ -56,15 +56,13 @@ class Pootle_PB_Portfolios_Public{
 	 */
 	public function row_attr( $attr, $set ) {
 
-		$this->block_now = 0;
 		$this->pofo_enabled = false;
 		$this->bg_images = false;
-		$this->row_animation = false;
+		$this->animation = false;
 		$this->hover_color = false;
 		$this->hover_color_opacity = 0.5;
 
 		if ( !empty( $set['portfolio-layout'] ) ) {
-			$attr['class'][] = 'ppb-portfolio portfolio-layout-' . $set['portfolio-layout'];
 			$this->pofo_enabled = true;
 		} else {
 			return $attr;
@@ -74,9 +72,6 @@ class Pootle_PB_Portfolios_Public{
 			$this->bg_images = json_decode( $set['portfolio-edit-background'], true );
 		}
 
-		if ( ! empty( $set['portfolio-animation'] ) ) {
-			$this->row_animation = $set['portfolio-animation'];
-		}
 
 		if ( !empty( $set['portfolio-hover-color'] ) ) {
 			$this->hover_color = $set['portfolio-hover-color'];
@@ -97,56 +92,63 @@ class Pootle_PB_Portfolios_Public{
 	 * @return array
 	 */
 	public function content_block_attr( $attr, $set ) {
-		if ( !empty( $set['portfolio-bg'] ) ) {
-			$attr['style'] .= 'background: url(' . $set['portfolio-bg'] . ') center/cover;';
+		if ( $this->pofo_used( $set ) ) {
+			$attr['class'][] = 'ppb-portfolio portfolio-layout-' . $set['portfolio-layout'];
+			if ( ! empty( $set['portfolio-animation'] ) ) {
+				$this->animation = $set['portfolio-animation'];
+			}
 		}
-		if ( !empty( $set['portfolio-item'] ) ) {
-			$attr['class'][] = 'ppb-portfolio-block';
-		}
-
-		$this->block_now++;
 
 		return $attr;
 	}
 
 	/**
-	 * Render the Content Panel.
-	 *
+	 * Render the Portfolio
 	 * @param array $info content block info
-	 *
+	 * @action pootlepb_render_content_block
 	 * @since 0.1.0
 	 */
 	public function portfolio( $info ) {
 		$set = json_decode( $info['info']['style'], true );
 
-		if ( ! empty( $set['portfolio-grid-across'] ) && ! empty( $set['portfolio-grid-down'] ) ) {
+		if ( $this->pofo_used( $set ) ) {
 			$across = $set['portfolio-grid-across'];
 			$down   = $set['portfolio-grid-down'];
+			$this->hover_color = $set['portfolio-grid-down'] || 'rgba(200, 200, 200, 0.5)';
+			$i = 0;
 			for ( $ro = 0; $ro < $down; $ro ++ ) {
 				?>
 				<div class="pofo-row">
 					<?php
 					for ( $c = 0; $c < $across; $c ++ ) {
+						$attr = array();
+						$attr['class'] = 'pofo-contents ppb-portfolio-item';
+						$attr['style'] = '';
+						$this->hover_color( $attr, $set );
+						$this->hover_animation( $attr, $set );
+						$this->add_link( $attr, $set );
+
 						?>
 						<div
-							class="pofo-item"
+							class="pofo-item ppb-portfolio-block"
 							style="<?php
 							?>width: <?php echo ( 101 - $across ) / $across ?>%;<?php
 							?>padding-top: <?php echo ( 101 - $across ) / $across ?>%;<?php
-							?>background-color: <?php echo $set[ 'portfolio-item-' . $ro . '-' . $c . '-color' ] ?>;<?php
-							?>background-image: url(<?php echo $set[ 'portfolio-item-' . $ro . '-' . $c . '-upload' ] ?>);<?php
+							?>background-color: <?php echo $set[ 'portfolio-item-' . $i . '-color' ] ?>;<?php
+							?>background-image: url(<?php echo $set[ 'portfolio-item-' . $i . '-image' ] ?>);<?php
 							?>">
-							<div class="pofo-contents"
-							     style="<?php
-							     ?>background-color: <?php echo $set[ 'portfolio-item-' . $ro . '-' . $c . '-color' ] ?>;<?php
-							     ?>">
+							<?php
 
-							<div class="hv-center">
-
+							echo '<div ' . pootlepb_stringify_attributes( $attr ) . '>';
+							?>
+								<div class="hv-center">
+									<?php echo $set[ 'portfolio-item-' . $i . '-content' ] ?>
 								</div>
 							</div>
 						</div>
 					<?php
+
+						$i++;
 					}
 					?>
 				</div>
@@ -156,16 +158,14 @@ class Pootle_PB_Portfolios_Public{
 
 		if ( !empty( $set['portfolio-item'] ) ) {
 
-			$attr = array();
-			$attr['class'] = 'ppb-portfolio-item';
-			$attr['style'] = '';
-
-			$this->hover_color( $attr, $set );
-			$this->hover_animation( $attr, $set );
-			$this->add_link( $attr, $set );
-
-			echo '<div ' . pootlepb_stringify_attributes( $attr ) . '>';
 		}
+	}
+
+	private function pofo_used( $set ) {
+		if ( ! empty( $set['portfolio-grid-across'] ) && ! empty( $set['portfolio-grid-down'] ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	private function hover_color( &$attr, $set ) {
@@ -179,8 +179,8 @@ class Pootle_PB_Portfolios_Public{
 
 	private function hover_animation( &$attr, $set ) {
 
-		if ( ! empty( $this->row_animation ) ) {
-			$attr['data-portfolio-animate'] = 'animated ' . $this->row_animation;
+		if ( ! empty( $this->animation ) ) {
+			$attr['data-portfolio-animate'] = 'animated ' . $this->animation;
 		}
 	}
 

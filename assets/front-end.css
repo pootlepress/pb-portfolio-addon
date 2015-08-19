@@ -8,12 +8,12 @@
     opacity:0;
 }
 
-.portfolio-layout-circle .ppb-portfolio-block, .portfolio-layout-circle .ppb-portfolio-item{
+.portfolio-layout-circle .ppb-portfolio-block, .portfolio-layout-circle .pofo-contents{
     -webkit-border-radius: 50%;
     border-radius: 50%;
 }
 
-.portfolio-layout-circle .ppb-portfolio-item{
+.portfolio-layout-circle .pofo-contents{
     padding: 16%;
     text-align: center;
 }
@@ -27,11 +27,11 @@
     border: none;
 }
 
-.ppb-portfolio-item p {
+.pofo-contents p {
     margin: 0;
 }
 
-.ppb-portfolio-item{
+.pofo-contents{
     opacity: 0;
     position: relative;
     transition: 0.25s opacity;
@@ -39,7 +39,7 @@
     text-align: center;
 }
 
-.ppb-block:hover .ppb-portfolio-item{
+.pofo-item:hover .pofo-contents{
     opacity: 1;
 }
 
