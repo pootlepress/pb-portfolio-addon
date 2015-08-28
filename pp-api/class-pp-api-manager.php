@@ -14,55 +14,11 @@ if ( ! class_exists( 'PootlePress_API_Manager' ) ) {
 	 */
 	require plugin_dir_path( __FILE__ ) . 'admin/class-pp-api-manager-menu.php';
 
+	require plugin_dir_path( __FILE__ ) . 'admin/funcs.php';
+
 	class PootlePress_API_Manager extends PootlePress_API_Manager_Menu {
 
-		/** @var string Base URL to the remote upgrade API Manager server */
-		public $upgrade_url;
-		/** @var string Version */
-		public $version;
-		/** @var string Token for this plugin */
-		public $token;
-		/** @var string Plugin name */
-		public $name;
-		/** @var string Plugin name */
-		public $file;
-		/** @var string Plugin textdomain */
-		public $text_domain;
-
-		/** @var string */
-		public $plugin_url;
-		/** @var PootlePress_Api_Manager_Key Instance */
-		protected $key_class;
-
-		/**
-		 * Data defaults
-		 * @var mixed
-		 */
 		private $software_product_id;
-
-		public $data_key;
-		public $instance_key;
-		public $deactivate_checkbox_key;
-		public $activated_key;
-
-		public $deactivate_checkbox;
-		public $activation_tab_key;
-		public $deactivation_tab_key;
-		public $settings_menu_title;
-		public $settings_title;
-		public $menu_tab_activation_title;
-		public $menu_tab_deactivation_title;
-
-		public $options;
-		public $plugin_name;
-		public $product_id;
-		public $renew_license_url;
-		public $instance_id;
-		public $domain;
-		public $software_version;
-		public $plugin_or_theme;
-
-		public $update_version;
 
 		/**
 		 * Used to send any extra information.
@@ -77,6 +33,7 @@ if ( ! class_exists( 'PootlePress_API_Manager' ) ) {
 			$this->token       = $token;
 			$this->name        = $name;
 			$this->file        = $file;
+
 			if ( $text_domain ) {
 				$this->text_domain = $text_domain;
 			} else {
@@ -223,7 +180,6 @@ if ( ! class_exists( 'PootlePress_API_Manager' ) ) {
 		 * Generate the default data arrays
 		 */
 		public function activation() {
-			global $wpdb;
 
 			$global_options = array(
 				'api_key'          => '',
@@ -270,40 +226,32 @@ if ( ! class_exists( 'PootlePress_API_Manager' ) ) {
 
 				switch_to_blog( $blog_id );
 
-				foreach (
-					array(
-						$this->data_key,
-						$this->token . '_product_id',
-						$this->instance_key,
-						$this->deactivate_checkbox_key,
-						$this->activated_key,
-					) as $option
-				) {
-
-					delete_option( $option );
-
-				}
+				$this->remove_options();
 
 				restore_current_blog();
 
 			} else {
 
-				foreach (
-					array(
-						$this->data_key,
-						$this->token . '_product_id',
-						$this->instance_key,
-						$this->deactivate_checkbox_key,
-						$this->activated_key
-					) as $option
-				) {
-
-					delete_option( $option );
-
-				}
+				$this->remove_options();
 
 			}
+		}
 
+		private function remove_options() {
+
+			foreach (
+				array(
+					$this->data_key,
+					$this->token . '_product_id',
+					$this->instance_key,
+					$this->deactivate_checkbox_key,
+					$this->activated_key,
+				) as $option
+			) {
+
+				delete_option( $option );
+
+			}
 		}
 
 		/**
@@ -334,11 +282,11 @@ if ( ! class_exists( 'PootlePress_API_Manager' ) ) {
 			<?php if ( ! current_user_can( 'manage_options' ) ) {
 				return;
 			} ?>
-			<?php if ( isset( $_GET['page'] ) && $this->token . '_dashboard' == $_GET['page'] ) {
+			<?php if ( ! in_array( filter_input( INPUT_GET, 'page' ), array( 'page_builder_settings', 'page_builder_addons', ) ) ) {
 				return;
 			} ?>
 			<div id="message" class="error">
-				<p><?php printf( __( $this->name . ' API License Key has not been activated, so the add on is inactive! %sClick here%s to activate the license key and the add on.', $this->text_domain ), '<a href="' . esc_url( admin_url( 'options-general.php?page=' . $this->token . '_dashboard' ) ) . '">', '</a>' ); ?></p>
+				<p><?php printf( __( 'Your ' . $this->name . ' License Key has not been activated, so you will miss out on important updates and support. %sClick here%s to activate the license key.', $this->text_domain ), '<a href="' . esc_url( admin_url( 'options-general.php?page=' . $this->token . '_dashboard' ) ) . '">', '</a>' ); ?></p>
 			</div>
 		<?php
 		}

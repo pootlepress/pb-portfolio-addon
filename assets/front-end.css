@@ -4,7 +4,7 @@
  * @package Pootle_PB_Portfolios
  * @version 0.1.0
  */
-.portfolio-layout-square, .panel-row-style.portfolio-layout-circle{
+.portfolio-layout-square, .portfolio-layout-circle{
     opacity:0;
 }
 
@@ -78,14 +78,30 @@
     left: 0;
 }
 .hv-center {
-    padding: 25px;
-    position: absolute;
-    top: 50%;
-    right: 0;
-    left: 0;
+    padding: 0 25px;
     text-align: center;
-    -ms-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
+}
+
+div#TB_window{
+    -webkit-box-shadow: 0 0 0 5px rgba(250,250,250,1);
+    box-shadow: 0 0 0 5px rgba(250,250,250,1);
+}
+div#TB_window img#TB_Image {
+    width: 100%;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+div#TB_caption, div#TB_closeWindow {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#TB_window .screen-reader-text {
+    display: block;
+}
+
+a#TB_ImageOff {
+    display: block;
 }

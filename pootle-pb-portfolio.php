@@ -18,3 +18,15 @@ require 'inc/class-public.php';
 require_once 'class-pootle-pb-portfolio.php';
 /** Instantiating main plugin class */
 Pootle_PB_Portfolios::instance( __FILE__ );
+
+/** Including PootlePress_API_Manager class */
+require_once plugin_dir_path( __FILE__ ) . 'pp-api/class-pp-api-manager.php';
+
+/** Instantiating PootlePress_API_Manager */
+new PootlePress_API_Manager(
+	Pootle_PB_Portfolios::$token,
+	'pootle page builder for WooCommerce',
+	Pootle_PB_Portfolios::$version,
+	Pootle_PB_Portfolios::$file,
+	Pootle_PB_Portfolios::$token
+);

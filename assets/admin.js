@@ -26,21 +26,6 @@ jQuery(function ($) {
         }
     });
 
-    add_pofo_block = function ($t) {
-        $('.cell').removeClass('cell-selected');
-        $t.addClass('cell-selected');
-
-        var panel = panelsCreatePanel('Pootle_PB_Content_Block', {
-            text: '[Your text here]',
-            info: {
-                style: {
-                    'portfolio-item': '1'
-                }
-            }
-        });
-        panels.addPanel(panel, null, null, false);
-    };
-
     //Switch to pofo tab
     $html.on('pootlepb_admin_editor_panel_done', function (e, $this) {
         if (
@@ -59,10 +44,23 @@ jQuery(function ($) {
         $butts.off('click');
         $slImg.click(ppbPofo.selectImg);
 
+        $this.find('.pofo-link-to select').change(function () {
+            var $t = $(this),
+                $field = $t.closest('.field'),
+                $linkFields = $t.closest('.field').siblings('.pofo-url, .pofo-new-page');
+            if ( 'link' == $t.val() ){
+                $linkFields.show();
+            } else {
+                $linkFields.hide();
+            }
+        });
+
         //Content blocks grid
         var $gPrev = $this.find('.pofo-grid-preview');
         var $gOpt = $this.find('.pofo-grid-options');
-        $this.find('.content-block-portfolio-grid-across, .content-block-portfolio-grid-down').off('change').on('change', function () {
+        $this.find('.content-block-portfolio-grid-across, .content-block-portfolio-grid-down')
+          .off('change')
+          .on('change', function () {
             $('.field-portfolio-edit-background').hide();
             var across = $this.find('.content-block-portfolio-grid-across').val(),
                 down = $this.find('.content-block-portfolio-grid-down').val(),
@@ -95,90 +93,7 @@ jQuery(function ($) {
                         );
 
                         //Add pofo item options
-                        $gOpt
-                            .append(
-                            $('<div/>')
-                                .addClass('pofo-item-options options-' + pofoItemRef)
-                                .append(
-                                //CONTENT
-                                $('<div/>')
-                                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
-                                    .append(
-                                    $('<label/>')
-                                        .html('Content')
-                                )
-                                    .append(
-                                    $('<span/>')
-                                        .append(
-                                        $('<textarea/>')
-                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-content')
-                                            .attr('data-style-field-type', 'textarea')
-                                            .addClass('content-block-options-' + pofoItemRef + '-content')
-                                    )
-                                )
-                            )
-                                .append(
-                                //HOVER COLOR
-                                $('<div/>')
-                                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
-                                    .append(
-                                    $('<label/>')
-                                        .html('Hover Color')
-                                )
-                                    .append(
-                                    $('<span/>')
-                                        .append(
-                                        $('<input/>')
-                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-hover-color')
-                                            .attr('data-style-field-type', 'color')
-                                            .addClass('content-block-options-' + pofoItemRef + '-hover-color')
-                                    )
-                                )
-                            )
-                                .append(
-                                //BG COLOR
-                                $('<div/>')
-                                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
-                                    .append(
-                                    $('<label/>')
-                                        .html('Background Color')
-                                )
-                                    .append(
-                                    $('<span/>')
-                                        .append(
-                                        $('<input/>')
-                                            .data('ref', pofoItemRef)
-                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-color')
-                                            .attr('data-style-field-type', 'color')
-                                            .addClass('content-block-options-' + pofoItemRef + '-color')
-                                    )
-                                )
-                            )
-                                .append(
-                                //BG IMAGE
-                                $('<div/>')
-                                    .addClass('field field-portfolio-' + pofoItemRef + '-image field_type-upload')
-                                    .append(
-                                    $('<label/>')
-                                        .html('Background Image')
-                                )
-                                    .append(
-                                    $('<span/>')
-                                        .append(
-                                        $('<input/>')
-                                            .data('ref', pofoItemRef)
-                                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-image')
-                                            .attr('data-style-field-type', 'upload')
-                                            .addClass('pofo-item-image content-block-options-' + pofoItemRef + '-image')
-                                    )
-                                        .append(
-                                        $('<button/>')
-                                            .addClass('button upload-button')
-                                            .html('Select Image')
-                                    )
-                                )
-                            )
-                        );
+                        ppbPofo.pofoItemSettings($gOpt, pofoItemRef);
                         item++;
                     }
                 }
@@ -308,6 +223,7 @@ jQuery(function ($) {
         // Finally, open the modal
         ppbPofo.frame.open();
     };
+
     /** Updates Content Block background images */
     ppbPofo.updateCBbgImg = function () {
         var $imgFields = $('.pofo-item-image'),
@@ -322,4 +238,151 @@ jQuery(function ($) {
             }
         });
     };
+
+    /** Adds pofo item options */
+    ppbPofo.pofoItemSettings = function ( $this, pofoItemRef ) {
+        $this.append(
+            $('<div/>')
+                .addClass('pofo-item-options options-' + pofoItemRef)
+                .append(
+                //CONTENT
+                $('<div/>')
+                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
+                    .append(
+                    $('<label/>')
+                        .html('Content')
+                )
+                    .append(
+                    $('<span/>')
+                        .append(
+                        $('<textarea/>')
+                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-content')
+                            .attr('data-style-field-type', 'textarea')
+                            .addClass('content-block-options-' + pofoItemRef + '-content')
+                    )
+                )
+            )
+                .append(
+                //HOVER COLOR
+                $('<div/>')
+                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
+                    .append(
+                    $('<label/>')
+                        .html('Hover Color')
+                )
+                    .append(
+                    $('<span/>')
+                        .append(
+                        $('<input/>')
+                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-hover-color')
+                            .attr('data-style-field-type', 'color')
+                            .addClass('content-block-options-' + pofoItemRef + '-hover-color')
+                    )
+                )
+            )
+                .append(
+                //BG COLOR
+                $('<div/>')
+                    .addClass('field field-portfolio-' + pofoItemRef + '-color field_type-color')
+                    .append(
+                    $('<label/>')
+                        .html('Background Color')
+                )
+                    .append(
+                    $('<span/>').append(
+                        $('<input/>')
+                            .data('ref', pofoItemRef)
+                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-color')
+                            .attr('data-style-field-type', 'color')
+                            .addClass('content-block-options-' + pofoItemRef + '-color')
+                    )
+                )
+            )
+                .append(
+                //BG IMAGE
+                $('<div/>')
+                    .addClass('field field-portfolio-' + pofoItemRef + '-image field_type-upload')
+                    .append(
+                    $('<label/>')
+                        .html('Background Image')
+                )
+                    .append(
+                    $('<span/>')
+                        .append(
+                        $('<input/>')
+                            .data('ref', pofoItemRef)
+                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-image')
+                            .attr('data-style-field-type', 'upload')
+                            .addClass('pofo-item-image content-block-options-' + pofoItemRef + '-image')
+                    )
+                        .append(
+                        $('<button/>')
+                            .addClass('button upload-button')
+                            .html('Select Image')
+                    )
+                )
+            )
+                .append(
+                //LINK TO
+                $('<div/>')
+                    .addClass('field field-portfolio-' + pofoItemRef + '-link pofo-link-to field_type-select')
+                    .append(
+                    $('<label/>')
+                        .html('Link to')
+                )
+                    .append(
+                    $('<span/>').append(
+                        $('<select/>')
+                            .data('ref', pofoItemRef)
+                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-link')
+                            .attr('data-style-field-type', 'select')
+                            .addClass('content-block-options-' + pofoItemRef + '-link')
+                            .append(
+                            $('<option value="">None</option>' +
+                            '<option value="link">Webpage</option>' +
+                            '<option value="libox">Lightbox</option>')
+                        )
+                    )
+                )
+            )
+                .append(
+                //WEB PAGE URL
+                $('<div/>')
+                    .addClass('field field-portfolio-' + pofoItemRef + '-url pofo-url field_type-text')
+                    .append(
+                    $('<label/>')
+                        .html('Webpage URL')
+                )
+                    .append(
+                    $('<span/>').append(
+                        $('<input/>')
+                            .data('ref', pofoItemRef)
+                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-url')
+                            .attr('data-style-field-type', 'text')
+                            .addClass('content-block-options-' + pofoItemRef + '-url')
+                    )
+                )
+            )
+                .append(
+                //NEW PAGE
+                $('<div/>')
+                    .addClass('field field-portfolio-' + pofoItemRef + '-new-page pofo-new-page field_type-checkbox')
+                    .append(
+                    $('<label/>')
+                        .html('New page')
+                )
+                    .append(
+                    $('<span/>').append(
+                        $('<input/>')
+                            .data('ref', pofoItemRef)
+                            .attr('type', 'checkbox')
+                            .val('1')
+                            .attr('dialog-field', 'portfolio-' + pofoItemRef + '-new-page')
+                            .attr('data-style-field-type', 'text')
+                            .addClass('content-block-options-' + pofoItemRef + '-new-page')
+                    )
+                )
+            )
+        );
+    }
 });
