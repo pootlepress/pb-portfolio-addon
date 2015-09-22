@@ -99,7 +99,9 @@ jQuery(function ($) {
                 }
                 ppbPofo.previewGridEvents($gPrev, $gOpt);
                 panels.addInputFieldEventHandlers($gOpt);
-                panels.pootlePageGetWidgetStyles($gOpt);
+                var json = window.$currentPanel.find('input[name$="[style]"]').val(),
+                    styleData = JSON.parse(json);
+                panels.setStylesToFields($gOpt, styleData);
                 $gPrev.sortable({
                     items: '.pofo-grid-item',
                     update: function ( e, ui ) {

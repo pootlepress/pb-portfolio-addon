@@ -216,10 +216,10 @@ class Pootle_PB_Portfolios_Admin {
 		$field['type'] = 'number';
 		$field['min'] = '0';
 		$field['max'] = '10';
-		pootlepb_render_content_field( $key . '-across', $field );
+		pootlepb_render_content_block_field( $key . '-across', $field );
 		echo ' across by ';
 		unset( $field['max'] );
-		pootlepb_render_content_field( $key . '-down', $field );
+		pootlepb_render_content_block_field( $key . '-down', $field );
 		echo ' down';
 	}
 }
